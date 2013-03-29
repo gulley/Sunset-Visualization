@@ -1,0 +1,21 @@
+body {
+    font-family: Arial;
+    font-size: 11px; 
+}
+span.label {
+}
+div.in {
+    border: 1px solid black;
+    width: 400px;
+    padding: 8px;
+}
+table {
+    border-collapse:collapse;
+    width: 800px;
+}
+table, th, td {
+    border: 1px solid black;
+}
+td {
+    padding: 8px;
+}

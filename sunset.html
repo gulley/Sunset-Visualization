@@ -1,0 +1,148 @@
+<!DOCTYPE html />
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> 
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
+
+        <link rel="stylesheet" type="text/css" href="sunset.css">
+        <script type="text/javascript" src="sunset.js"></script>
+
+    </head>
+
+<body onload="calculate()">
+<h1>Sunrise/Sunset Times</h1>
+  
+  <table border="2" cellpadding="2">
+  <tbody><tr>
+  <th>Location:</th>
+  <td>
+   Lat
+    <input type="text" name="lat" id="latbox" size="5" value="42.30" class="textinput" onchange="latlongChanged()">;
+  </td><td>
+   Lng
+    <input type="text" name="lon" id="lngbox" size="8" value="-71.35" class="textinput" onchange="latlongChanged()">;
+  </td><td>
+   Time Zone
+    <input type="text" name="timezone" id="zonebox" size="3" value="-5" class="textinput" onchange="inputsChanged()">
+  </td><td>
+   DST?<input type="checkbox" name="dst" id="dstCheckbox" onclick="inputsChanged()"> 
+  </td>
+  </tr>
+  </tbody>
+</table>
+
+  <p><p/>
+
+  <table border="2" cellpadding="2">
+  <tbody><tr>
+  <th>Date:</th>
+  <td>
+   Day
+  <select name="day" id="daybox" onchange="inputsChanged()">
+
+  <script type="text/javascript">
+   dateObj2 = new Date();
+   thisday = dateObj2.getDate();
+      for (i = 1; i < 32; i++) {
+     if (i == thisday) {
+          document.writeln("<OPTION SELECTED>" + i);
+     }
+     else {
+       document.writeln("<OPTION>" + i);
+     }
+   }
+  </script>
+  </select>
+  </td><td>
+   Mon
+  <select name="mos" id="mosbox" onchange="inputsChanged()">
+  <script language="JavaScript" type="text/javascript">
+
+   dateObj1 = new Date();
+      thismonth = dateObj1.getMonth();
+      today = dateObj1.getDate(); 
+      for (i = 0; i < monthList.length; i++) {
+     if (i == thismonth) {
+          document.writeln("<OPTION SELECTED>" + monthList[i].abbr);
+     }
+     else {
+       document.writeln("<OPTION>" + monthList[i].abbr);
+     }
+   }
+   
+</script></select>
+  </td><td>
+   Yr
+  <script language="JavaScript" type="text/javascript">
+   dateObj3 = new Date();
+   thisYear = dateObj3.getYear();
+   if(thisYear <=199){
+     thisYear=(thisYear*1)+1900;
+   }
+   document.writeln("<INPUT TYPE=\"text\" ID=\"yearbox\" NAME=\"year\" SIZE=\"4\"VALUE=\"" + thisYear*1 + "\" onChange=\"inputsChanged()\">");
+  </script>
+
+  </td><th>Local Time:</th>
+  <td>
+  <script language="JavaScript">
+    // FIXME: Use jQuery instead of these ugly writeln statements
+    var dateObj4 = new Date();
+    var nowhour = dateObj4.getHours();
+    var nowmins = dateObj4.getMinutes();
+    var nowsecs = dateObj4.getSeconds();
+
+    document.writeln("<INPUT TYPE=\"text\" ID=\"hrbox\" NAME=\"hour\" SIZE=\"2\"VALUE=\"" + zeroPad(nowhour,2) + "\"   onChange=\"inputsChanged()\"> <b>:</b>");
+    document.writeln("<INPUT TYPE=\"text\" ID=\"mnbox\" NAME=\"mins\" SIZE=\"2\"VALUE=\"" + zeroPad(nowmins,2) + "\"   onChange=\"inputsChanged()\"> <b>:</b>");
+    document.writeln("<INPUT TYPE=\"text\" ID=\"scbox\" NAME=\"secs\" SIZE=\"2\"VALUE=\"" + zeroPad(nowsecs,2) + "\"   onChange=\"inputsChanged()\">");
+    document.writeln("<INPUT TYPE=\"checkbox\" ID=\"pmbox\" NAME=\"pm\" onClick=\"inputsChanged()\">PM");
+ </script>
+
+  </td></tr>
+  </tbody>
+</table>
+
+  <p><p/>
+
+   <table border="2" cellpadding="2">
+      <tbody>
+         <tr>  
+           <td align="CENTER">Equation of Time (minutes):</td>
+           <td align="CENTER">Solar Declination (deg):</td>
+           <td align="CENTER">Apparent Sunrise:</td>
+           <td align="CENTER">Solar Noon:</td>
+           <td align="CENTER">Apparent<br>Sunset:</td>
+           <td align="CENTER">Az/El (deg) at<br>Local Time:</td>
+         </tr>
+         <tr>
+          <td><input type="text" id="eqtbox"  name="eqTime"   size="8"></td>
+          <td><input type="text" id="sdbox"   name="solarDec" size="8"></td>
+          <td><input type="text" id="risebox" name="sunrise"  size="13"></td>
+          <td><input type="text" id="noonbox" name="solnoon"  size="8"></td>
+          <td><input type="text" id="setbox"  name="sunset"   size="13"></td>
+          <td><input type="text" id="azbox"   name="az"       size="5">
+              <input type="text" id="elbox"   name="el"       size="5"></td>
+         </tr>
+      </tbody>
+   </table>
+
+<p>These calculations are based on code from the NOAA Solar Calculator</p>
+
+  <script>
+  $(function() {
+    $("#datepicker").datepicker();
+    $("#datepicker").datepicker("setDate","0");
+  });
+  </script>
+
+<div class="in"><span class="label">Location:</span> <span id="location"></span></div>
+<div class="in"><span class="label">Date:</span> <input type="text" id="datepicker" /></div>
+<div class="in"><span class="label">Time</span><span id="time"></span></div>
+<div class="in"><span class="label">Apparent Sunrise</span><span id="sunrise"></span></div>
+<div class="in"><span class="label">Solar Noon</span><span id="noon"></span></div>
+<div class="in"><span class="label">Apparent Sunset</span><span id="sunset"></span></div>
+
+</body>
+</html>
