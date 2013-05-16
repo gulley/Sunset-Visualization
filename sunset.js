@@ -286,37 +286,29 @@ monthList[i++] = new month("December",  31, "Dec");
 
 // ----------------------------------------------
 
+function getJDFromDatePicker() {
+  var theDate = $("#datepicker").datepicker("getDate");
+  return getJD(theDate);
+}
 
-function getJD() {
-    // Get Julian Date
 
-    var theDate = $("#datepicker").datepicker("getDate");
-    var docmonth = theDate.getMonth() + 1;
-    var docday = theDate.getDate();
-    var docyear = theDate.getFullYear();
+function getJD(theDate) {
+  // Get Julian Date
 
-    // var docmonth = document.getElementById("mosbox").selectedIndex + 1
-    // var docday =   document.getElementById("daybox").selectedIndex + 1
-    // var docyear =  readTextBox("yearbox", 5, 1, 0, -2000, 3000, 2009)
-  if ( (isLeapYear(docyear)) && (docmonth == 2) ) {
-    if (docday > 29) {
-      docday = 29
-      document.getElementById("daybox").selectedIndex = docday - 1
-    }
-  } else {
-    if (docday > monthList[docmonth-1].numdays) {
-      docday = monthList[docmonth-1].numdays
-      document.getElementById("daybox").selectedIndex = docday - 1
-    }
-  }
+  var docmonth = theDate.getMonth() + 1;
+  var docday   = theDate.getDate();
+  var docyear  = theDate.getFullYear();
+
   if (docmonth <= 2) {
-    docyear -= 1
-    docmonth += 12
+    docyear -= 1;
+    docmonth += 12;
   }
-  var A = Math.floor(docyear/100)
-  var B = 2 - A + Math.floor(A/4)
-  var JD = Math.floor(365.25*(docyear + 4716)) + Math.floor(30.6001*(docmonth+1)) + docday + B - 1524.5
-  return JD
+
+  var A = Math.floor(docyear/100);
+  var B = 2 - A + Math.floor(A/4);
+  var JD = Math.floor(365.25*(docyear + 4716)) + Math.floor(30.6001*(docmonth+1)) + docday + B - 1524.5;
+  return JD;
+
 }
 
 
@@ -478,6 +470,7 @@ function timeDateString(JD, minutes) {
 function timeString(minutes, flag) {
     // timeString returns a zero-padded string (HH:MM:SS) given time in minutes
     // flag=2 for HH:MM, 3 for HH:MM:SS {
+
     if ((minutes >= 0) && (minutes < 1440)) {
         var floatHour = minutes / 60.0;
         var hour = Math.floor(floatHour);
@@ -598,7 +591,7 @@ function clearOutputs() {
 
 
 function calculate() {
-    var jday = getJD()
+    var jday = getJDFromDatePicker()
     var tl = getTimeLocal()
     var tz = readTextBox("zonebox", 5, 0, 0, -14, 13, 0)
     var dst = $("#dstCheckbox").is(':checked');
@@ -614,9 +607,8 @@ function calculate() {
 }
 
 
-
 function earliestSunset() {
-    var jday = getJD()
+    var jday = getJDFromDatePicker()
     var lat = parseFloat(document.getElementById("latbox").value.substring(0,9))
     var lng = parseFloat(document.getElementById("lngbox").value.substring(0,10))
 

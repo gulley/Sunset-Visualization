@@ -19,12 +19,19 @@
     });
   </script>
   
-<script>
+  <script>
     test( "Sunrise and Sunset UTC", function() {
       var lat = 42;
       var lng = -71;
       var jday = 2456426.0;
-      equal(calcSunriseSetUTC(0,jday,lat,lng), 1435.425368584185,'test');
+      equal(calcSunriseSetUTC(0,jday,lat,lng), 1435.425368584185,'lat 42, lng -71');
+    });
+  </script>
+
+  <script>
+    test( "Julian Dates", function() {
+      var theDate = new Date("2012/01/20");
+      equal(getJD(theDate), 2455946.5,'Jan 20, 2012');
     });
   </script>
 
