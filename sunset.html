@@ -1,6 +1,7 @@
 <!DOCTYPE html />
 <html>
     <head>
+    	<title>Sunset Times</title>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> 
@@ -32,7 +33,7 @@
   </tbody>
 </table>
 
-  <p><p/>
+<p>
 
   <table border="2" cellpadding="2">
   <tbody><tr>
@@ -57,7 +58,7 @@
   </td><td>
    Mon
   <select name="mos" id="mosbox" onchange="inputsChanged()">
-  <script language="JavaScript" type="text/javascript">
+  <script type="text/javascript">
 
    dateObj1 = new Date();
       thismonth = dateObj1.getMonth();
@@ -74,7 +75,7 @@
 </script></select>
   </td><td>
    Yr
-  <script language="JavaScript" type="text/javascript">
+  <script type="text/javascript">
    dateObj3 = new Date();
    thisYear = dateObj3.getYear();
    if(thisYear <=199){
@@ -85,7 +86,7 @@
 
   </td><th>Local Time:</th>
   <td>
-  <script language="JavaScript">
+  <script type="text/javascript">
     // FIXME: Use jQuery instead of these ugly writeln statements
     var dateObj4 = new Date();
     var nowhour = dateObj4.getHours();
@@ -102,17 +103,16 @@
   </tbody>
 </table>
 
-  <p><p/>
 
    <table border="2" cellpadding="2">
       <tbody>
          <tr>  
-           <td align="CENTER">Equation of Time (minutes):</td>
-           <td align="CENTER">Solar Declination (deg):</td>
-           <td align="CENTER">Apparent Sunrise:</td>
-           <td align="CENTER">Solar Noon:</td>
-           <td align="CENTER">Apparent<br>Sunset:</td>
-           <td align="CENTER">Az/El (deg) at<br>Local Time:</td>
+           <td >Equation of Time (minutes):</td>
+           <td >Solar Declination (deg):</td>
+           <td >Apparent Sunrise:</td>
+           <td >Solar Noon:</td>
+           <td >Apparent<br>Sunset:</td>
+           <td >Az/El (deg) at<br>Local Time:</td>
          </tr>
       </tbody>
    </table>
@@ -128,12 +128,12 @@
 
 <div class="in">
     <span class="label">Latitude:&nbsp;</span>
-    <span id="location"> </span>
+    <span id="latitude"> </span>
     <input type="text" name="lat" id="latbox" size="5" value="42.30" class="textinput" onchange="latlongChanged()">;
 </div>
 <div class="in">
     <span class="label">Longitude:&nbsp;</span>
-    <span id="location"> </span>
+    <span id="longitude"> </span>
     <input type="text" name="lon" id="lngbox" size="8" value="-71.35" class="textinput" onchange="latlongChanged()">;
 </div>
 <div class="in">
