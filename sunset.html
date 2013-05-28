@@ -20,10 +20,8 @@
   <th>Location:</th>
   <td>
    Lat
-    <input type="text" name="lat" id="latbox" size="5" value="42.30" class="textinput" onchange="latlongChanged()">;
   </td><td>
    Lng
-    <input type="text" name="lon" id="lngbox" size="8" value="-71.35" class="textinput" onchange="latlongChanged()">;
   </td><td>
    Time Zone
     <input type="text" name="timezone" id="zonebox" size="3" value="-5" class="textinput" onchange="inputsChanged()">
@@ -116,15 +114,6 @@
            <td align="CENTER">Apparent<br>Sunset:</td>
            <td align="CENTER">Az/El (deg) at<br>Local Time:</td>
          </tr>
-         <tr>
-          <td><input type="text" id="eqtbox"  name="eqTime"   size="8"></td>
-          <td><input type="text" id="sdbox"   name="solarDec" size="8"></td>
-          <td><input type="text" id="risebox" name="sunrise"  size="13"></td>
-          <td><input type="text" id="noonbox" name="solnoon"  size="8"></td>
-          <td><input type="text" id="setbox"  name="sunset"   size="13"></td>
-          <td><input type="text" id="azbox"   name="az"       size="5">
-              <input type="text" id="elbox"   name="el"       size="5"></td>
-         </tr>
       </tbody>
    </table>
 
@@ -137,12 +126,68 @@
   });
   </script>
 
-<div class="in"><span class="label">Location:</span> <span id="location"></span></div>
-<div class="in"><span class="label">Date:</span> <input type="text" id="datepicker" /></div>
-<div class="in"><span class="label">Time</span><span id="time"></span></div>
-<div class="in"><span class="label">Apparent Sunrise</span><span id="sunrise"></span></div>
-<div class="in"><span class="label">Solar Noon</span><span id="noon"></span></div>
-<div class="in"><span class="label">Apparent Sunset</span><span id="sunset"></span></div>
+<div class="in">
+    <span class="label">Latitude:&nbsp;</span>
+    <span id="location"> </span>
+    <input type="text" name="lat" id="latbox" size="5" value="42.30" class="textinput" onchange="latlongChanged()">;
+</div>
+<div class="in">
+    <span class="label">Longitude:&nbsp;</span>
+    <span id="location"> </span>
+    <input type="text" name="lon" id="lngbox" size="8" value="-71.35" class="textinput" onchange="latlongChanged()">;
+</div>
+<div class="in">
+    <span class="label">Time Zone:&nbsp;</span>
+    <span id="timezone"> </span>
+</div>
+<div class="in">
+    <span class="label">Daylight Saving Time:&nbsp;</span>
+    <span id="dst"> </span>
+</div>
+<div class="in">
+    <span class="label">Date:&nbsp;</span><input type="text" id="datepicker" />
+</div>
+<div class="in">
+    <span class="label">Time:&nbsp;</span>
+    <span id="time"> </span>
+</div>
+<div class="in">
+    <span class="label">PM:&nbsp;</span>
+    <span id="pm"> </span>
+</div>
+<div class="in">
+    <span class="label">Equation of Time:&nbsp;</span>
+    <span id="eot"> </span><input type="text" id="eqtbox"  name="eqTime"   size="8">
+</div>
+<div class="in">
+    <span class="label">Solar Declination:&nbsp;</span>
+    <span id="declination"> </span><input type="text" id="sdbox"   name="solarDec" size="8">
+</div>
+<div class="in">
+    <span class="label">Apparent Sunrise:&nbsp;</span>
+    <span id="sunrise"> </span><input type="text" id="risebox" name="sunrise"  size="13">
+</div>
+<div class="in">
+    <span class="label">Solar Noon:&nbsp;</span>
+    <span id="noon"> </span>
+    <input type="text" id="noonbox" name="solnoon"  size="8">
+</div>
+<div class="in">
+    <span class="label">Apparent Sunset:&nbsp;</span>
+    <span id="sunset"> </span>
+    <input type="text" id="setbox"  name="sunset"   size="13">
+</div>
+<div class="in">
+    <span class="label">Azimuth:&nbsp;</span>
+    <span id="azimuth"> </span>
+    <input type="text" id="azbox"   name="az"       size="5">
+</div>
+<div class="in">
+    <span class="label">Elevation:&nbsp;</span>
+    <span id="elevation"> </span>
+    <input type="text" id="elbox"   name="el"       size="5">
+</div>
+
 
 </body>
 </html>
