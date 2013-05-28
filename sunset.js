@@ -20,14 +20,14 @@ function inputsChanged() {
 // ----------------------------------------------
 
 function calcTimeJulianCent(jd) {
-    var T = (jd - 2451545.0)/36525.0
-    return T
+    var T = (jd - 2451545.0)/36525.0;
+    return T;
 }
 
 
 function calcJDFromJulianCent(t) {
-    var JD = t * 36525.0 + 2451545.0
-    return JD
+    var JD = t * 36525.0 + 2451545.0;
+    return JD;
 }
 
 
@@ -293,7 +293,8 @@ function getJDFromDatePicker() {
 
 
 function getJD(theDate) {
-  // Get Julian Date
+  // Get Julian Date 
+  // Use this reference http://aa.usno.navy.mil/data/docs/JulianDate.php
 
   var docmonth = theDate.getMonth() + 1;
   var docday   = theDate.getDate();
