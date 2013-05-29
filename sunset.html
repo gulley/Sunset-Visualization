@@ -1,192 +1,119 @@
 <!DOCTYPE html />
 <html>
-    <head>
-    	<title>Sunset Times</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <head>
+  	<title>Sunset Times</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> 
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
-        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> 
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
 
-        <link rel="stylesheet" type="text/css" href="sunset.css">
-        <script type="text/javascript" src="sunset.js"></script>
+    <link rel="stylesheet" type="text/css" href="sunset.css">
+    <script type="text/javascript" src="astro.js"></script>
+    <script type="text/javascript" src="sunset.js"></script>
 
-    </head>
+  </head>
 
 <body onload="calculate()">
 <h1>Sunrise/Sunset Times</h1>
   
-  <table border="2" cellpadding="2">
-  <tbody><tr>
-  <th>Location:</th>
-  <td>
-   Lat
-  </td><td>
-   Lng
-  </td><td>
-   Time Zone
-    <input type="text" name="timezone" id="zonebox" size="3" value="-5" class="textinput" onchange="inputsChanged()">
-  </td><td>
-   DST?<input type="checkbox" name="dst" id="dstCheckbox" onclick="inputsChanged()"> 
-  </td>
-  </tr>
-  </tbody>
-</table>
-
-<p>
-
-  <table border="2" cellpadding="2">
-  <tbody><tr>
-  <th>Date:</th>
-  <td>
-   Day
-  <select name="day" id="daybox" onchange="inputsChanged()">
-
   <script type="text/javascript">
-   dateObj2 = new Date();
-   thisday = dateObj2.getDate();
-      for (i = 1; i < 32; i++) {
-     if (i == thisday) {
-          document.writeln("<OPTION SELECTED>" + i);
-     }
-     else {
-       document.writeln("<OPTION>" + i);
-     }
-   }
-  </script>
-  </select>
-  </td><td>
-   Mon
-  <select name="mos" id="mosbox" onchange="inputsChanged()">
-  <script type="text/javascript">
-
-   dateObj1 = new Date();
-      thismonth = dateObj1.getMonth();
-      today = dateObj1.getDate(); 
-      for (i = 0; i < monthList.length; i++) {
-     if (i == thismonth) {
-          document.writeln("<OPTION SELECTED>" + monthList[i].abbr);
-     }
-     else {
-       document.writeln("<OPTION>" + monthList[i].abbr);
-     }
-   }
-   
-</script></select>
-  </td><td>
-   Yr
-  <script type="text/javascript">
-   dateObj3 = new Date();
-   thisYear = dateObj3.getYear();
-   if(thisYear <=199){
-     thisYear=(thisYear*1)+1900;
-   }
-   document.writeln("<INPUT TYPE=\"text\" ID=\"yearbox\" NAME=\"year\" SIZE=\"4\"VALUE=\"" + thisYear*1 + "\" onChange=\"inputsChanged()\">");
-  </script>
-
-  </td><th>Local Time:</th>
-  <td>
-  <script type="text/javascript">
-    // FIXME: Use jQuery instead of these ugly writeln statements
-    var dateObj4 = new Date();
-    var nowhour = dateObj4.getHours();
-    var nowmins = dateObj4.getMinutes();
-    var nowsecs = dateObj4.getSeconds();
-
-    document.writeln("<INPUT TYPE=\"text\" ID=\"hrbox\" NAME=\"hour\" SIZE=\"2\"VALUE=\"" + zeroPad(nowhour,2) + "\"   onChange=\"inputsChanged()\"> <b>:</b>");
-    document.writeln("<INPUT TYPE=\"text\" ID=\"mnbox\" NAME=\"mins\" SIZE=\"2\"VALUE=\"" + zeroPad(nowmins,2) + "\"   onChange=\"inputsChanged()\"> <b>:</b>");
-    document.writeln("<INPUT TYPE=\"text\" ID=\"scbox\" NAME=\"secs\" SIZE=\"2\"VALUE=\"" + zeroPad(nowsecs,2) + "\"   onChange=\"inputsChanged()\">");
-    document.writeln("<INPUT TYPE=\"checkbox\" ID=\"pmbox\" NAME=\"pm\" onClick=\"inputsChanged()\">PM");
+  var dateObj4 = new Date();
+  var nowhour = dateObj4.getHours();
+  var nowmins = dateObj4.getMinutes();
+  var nowsecs = dateObj4.getSeconds();
  </script>
 
-  </td></tr>
-  </tbody>
-</table>
-
-
-   <table border="2" cellpadding="2">
-      <tbody>
-         <tr>  
-           <td >Equation of Time (minutes):</td>
-           <td >Solar Declination (deg):</td>
-           <td >Apparent Sunrise:</td>
-           <td >Solar Noon:</td>
-           <td >Apparent<br>Sunset:</td>
-           <td >Az/El (deg) at<br>Local Time:</td>
-         </tr>
-      </tbody>
-   </table>
 
 <p>These calculations are based on code from the NOAA Solar Calculator</p>
 
   <script>
   $(function() {
-    $("#datepicker").datepicker();
-    $("#datepicker").datepicker("setDate","0");
+  $("#datepicker").datepicker();
+  $("#datepicker").datepicker("setDate","0");
   });
   </script>
 
 <div class="in">
-    <span class="label">Latitude:&nbsp;</span>
-    <span id="latitude"> </span>
-    <input type="text" name="lat" id="latbox" size="5" value="42.30" class="textinput" onchange="latlongChanged()">;
+  <span class="label">Latitude:&nbsp;</span>
+  <span id="latitude"> </span>
+  <input type="text" name="lat" id="latbox" size="5" value="42.30" class="textinput" onchange="latlongChanged()">
 </div>
+
 <div class="in">
-    <span class="label">Longitude:&nbsp;</span>
-    <span id="longitude"> </span>
-    <input type="text" name="lon" id="lngbox" size="8" value="-71.35" class="textinput" onchange="latlongChanged()">;
+  <span class="label">Longitude:&nbsp;</span>
+  <span id="longitude"> </span>
+  <input type="text" name="lon" id="lngbox" size="8" value="-71.35" class="textinput" onchange="latlongChanged()">
 </div>
+
 <div class="in">
-    <span class="label">Time Zone:&nbsp;</span>
-    <span id="timezone"> </span>
+  <span class="label">Time Zone:&nbsp;</span>
+  <span id="timezone"> </span>
+  <input type="text" name="timezone" id="zonebox" size="3" value="-5" class="textinput" onchange="inputsChanged()">
 </div>
+
 <div class="in">
-    <span class="label">Daylight Saving Time:&nbsp;</span>
-    <span id="dst"> </span>
+  <span class="label">Daylight Saving Time:&nbsp;</span>
+  <span id="dst"> </span>
+  <input type="checkbox" name="dst" id="dstCheckbox" onclick="inputsChanged()"> 
 </div>
+
 <div class="in">
-    <span class="label">Date:&nbsp;</span><input type="text" id="datepicker" />
+  <span class="label">Date:&nbsp;</span><input type="text" id="datepicker" />
 </div>
+
 <div class="in">
-    <span class="label">Time:&nbsp;</span>
-    <span id="time"> </span>
+  <span class="label">Local Time:&nbsp;</span>
+  <span id="time"> </span>
+  <input type="text"     name="hour" id="hrbox" size="2" value="00" onchange="inputsChanged()" >
+  <input type="text"     name="mins" id="mnbox" size="2" value="00" onchange="inputsChanged()" >
+  <input type="text"     name="secs" id="scbox" size="2" value="00" onchange="inputsChanged()" >
 </div>
+
 <div class="in">
-    <span class="label">PM:&nbsp;</span>
-    <span id="pm"> </span>
+  <span class="label">PM:&nbsp;</span>
+  <span id="pm"> </span>
+  <input type="checkbox" name="pm"   id="pmbox"                     onchange="inputsChanged()" >
 </div>
+
 <div class="in">
-    <span class="label">Equation of Time:&nbsp;</span>
-    <span id="eot"> </span><input type="text" id="eqtbox"  name="eqTime"   size="8">
+  <span class="label">Equation of Time:&nbsp;</span>
+  <span id="eot"> </span><input type="text" id="eqtbox"  name="eqTime"   size="8">
 </div>
+
 <div class="in">
-    <span class="label">Solar Declination:&nbsp;</span>
-    <span id="declination"> </span><input type="text" id="sdbox"   name="solarDec" size="8">
+  <span class="label">Solar Declination:&nbsp;</span>
+  <span id="declination"> </span><input type="text" id="sdbox"   name="solarDec" size="8">
 </div>
+
 <div class="in">
-    <span class="label">Apparent Sunrise:&nbsp;</span>
-    <span id="sunrise"> </span><input type="text" id="risebox" name="sunrise"  size="13">
+  <span class="label">Apparent Sunrise:&nbsp;</span>
+  <span id="sunrise"> </span>
 </div>
+
 <div class="in">
-    <span class="label">Solar Noon:&nbsp;</span>
-    <span id="noon"> </span>
-    <input type="text" id="noonbox" name="solnoon"  size="8">
+  <span class="label">Solar Noon:&nbsp;</span>
+  <span id="noon"> </span>
+  <input type="text" id="noonbox" name="solnoon"  size="8">
 </div>
+
 <div class="in">
-    <span class="label">Apparent Sunset:&nbsp;</span>
-    <span id="sunset"> </span>
-    <input type="text" id="setbox"  name="sunset"   size="13">
+  <span class="label">Apparent Sunset:&nbsp;</span>
+  <span id="sunset"> </span>
 </div>
+
 <div class="in">
-    <span class="label">Azimuth:&nbsp;</span>
-    <span id="azimuth"> </span>
-    <input type="text" id="azbox"   name="az"       size="5">
+  <span class="label">Azimuth:&nbsp;</span>
+  <span id="azimuth"> </span>
+  <input type="text" id="azbox"   name="az"     size="5">
 </div>
+
 <div class="in">
-    <span class="label">Elevation:&nbsp;</span>
-    <span id="elevation"> </span>
-    <input type="text" id="elbox"   name="el"       size="5">
+  <span class="label">Elevation:&nbsp;</span>
+  <span id="elevation"> </span>
+  <input type="text" id="elbox"   name="el"     size="5">
 </div>
+
 
 
 </body>
