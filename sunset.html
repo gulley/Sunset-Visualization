@@ -17,14 +17,6 @@
 <body onload="calculate()">
 <h1>Sunrise/Sunset Times</h1>
   
-  <script type="text/javascript">
-  var dateObj4 = new Date();
-  var nowhour = dateObj4.getHours();
-  var nowmins = dateObj4.getMinutes();
-  var nowsecs = dateObj4.getSeconds();
- </script>
-
-
 <p>These calculations are based on code from the NOAA Solar Calculator</p>
 
   <script>
@@ -68,6 +60,8 @@
   <input type="text"     name="hour" id="hrbox" size="2" value="00" onchange="inputsChanged()" >
   <input type="text"     name="mins" id="mnbox" size="2" value="00" onchange="inputsChanged()" >
   <input type="text"     name="secs" id="scbox" size="2" value="00" onchange="inputsChanged()" >
+  <br/>
+  <span id="timebox"> </span>
 </div>
 
 <div class="in">

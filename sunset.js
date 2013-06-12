@@ -24,20 +24,16 @@ function inputsChanged() {
 function isNumber(inputVal) {
   var oneDecimal = false;
   var inputStr = "" + inputVal;
-  for (var i = 0; i < inputStr.length; i++)
- {
+  for (var i = 0; i < inputStr.length; i++) {
     var oneChar = inputStr.charAt(i);
-    if (i == 0 && (oneChar == "-" || oneChar == "+"))
- {
+    if (i == 0 && (oneChar == "-" || oneChar == "+")) {
       continue;
-    }
-    if (oneChar == "." && !oneDecimal)
- {
+    } 
+    if (oneChar == "." && !oneDecimal) {
       oneDecimal = true;
       continue;
     }
-    if (oneChar < "0" || oneChar > "9")
- {
+    if (oneChar < "0" || oneChar > "9") {
       return false;
     }
   }
@@ -390,8 +386,10 @@ function calculate() {
 
     var total = jday + tl/1440.0 - tz/24.0
     var T = calcTimeJulianCent(total)
-    var lat = parseFloat(document.getElementById("latbox").value.substring(0,9))
-    var lng = parseFloat(document.getElementById("lngbox").value.substring(0,10))
+    // var lat = parseFloat(document.getElementById("latbox").value.substring(0,9))
+    // var lng = parseFloat(document.getElementById("lngbox").value.substring(0,10))
+    var lat = parseFloat($('#latbox').attr('value'));
+    var lng = parseFloat($('#lngbox').attr('value'))
     calcAzEl(1, T, tl, lat, lng, tz)
     calcSolNoon(jday, lng, tz, dst)
     var rise = calcSunriseSet(1, jday, lat, lng, tz, dst)
