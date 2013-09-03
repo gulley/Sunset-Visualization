@@ -2,113 +2,16 @@
 <html>
   <head>
   	<title>Sunset Times</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> 
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
+    <link href='http://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" type="text/css" href="sunset.css">
-    <script type="text/javascript" src="astro.js"></script>
+    <script type="text/javascript" src="SunriseSunset.js"></script>
     <script type="text/javascript" src="sunset.js"></script>
-
   </head>
 
-<body onload="calculate()">
-<h1>Sunrise/Sunset Times</h1>
-  
-<p>These calculations are based on code from the NOAA Solar Calculator</p>
+  <body onload="showTime()">
+    <div class="time"></div>
+  </body>
 
-  <script>
-  $(function() {
-  $("#datepicker").datepicker();
-  $("#datepicker").datepicker("setDate","0");
-  });
-  </script>
-
-<div class="in">
-  <span class="label">Latitude:&nbsp;</span>
-  <span id="latitude"> </span>
-  <input type="text" name="lat" id="latbox" size="5" value="42.30" class="textinput" onchange="latlongChanged()">
-</div>
-
-<div class="in">
-  <span class="label">Longitude:&nbsp;</span>
-  <span id="longitude"> </span>
-  <input type="text" name="lon" id="lngbox" size="8" value="-71.35" class="textinput" onchange="latlongChanged()">
-</div>
-
-<div class="in">
-  <span class="label">Time Zone:&nbsp;</span>
-  <span id="timezone"> </span>
-  <input type="text" name="timezone" id="zonebox" size="3" value="-5" class="textinput" onchange="inputsChanged()">
-</div>
-
-<div class="in">
-  <span class="label">Daylight Saving Time:&nbsp;</span>
-  <span id="dst"> </span>
-  <input type="checkbox" name="dst" id="dstCheckbox" onclick="inputsChanged()"> 
-</div>
-
-<div class="in">
-  <span class="label">Date:&nbsp;</span><input type="text" id="datepicker" />
-</div>
-
-<div class="in">
-  <span class="label">Local Time:&nbsp;</span>
-  <span id="time"> </span>
-  <input type="text"     name="hour" id="hrbox" size="2" value="00" onchange="inputsChanged()" >
-  <input type="text"     name="mins" id="mnbox" size="2" value="00" onchange="inputsChanged()" >
-  <input type="text"     name="secs" id="scbox" size="2" value="00" onchange="inputsChanged()" >
-  <br/>
-  <span id="timebox"> </span>
-</div>
-
-<div class="in">
-  <span class="label">PM:&nbsp;</span>
-  <span id="pm"> </span>
-  <input type="checkbox" name="pm"   id="pmbox"                     onchange="inputsChanged()" >
-</div>
-
-<div class="in">
-  <span class="label">Equation of Time:&nbsp;</span>
-  <span id="eot"> </span><input type="text" id="eqtbox"  name="eqTime"   size="8">
-</div>
-
-<div class="in">
-  <span class="label">Solar Declination:&nbsp;</span>
-  <span id="declination"> </span><input type="text" id="sdbox"   name="solarDec" size="8">
-</div>
-
-<div class="in">
-  <span class="label">Apparent Sunrise:&nbsp;</span>
-  <span id="sunrise"> </span>
-</div>
-
-<div class="in">
-  <span class="label">Solar Noon:&nbsp;</span>
-  <span id="noon"> </span>
-  <input type="text" id="noonbox" name="solnoon"  size="8">
-</div>
-
-<div class="in">
-  <span class="label">Apparent Sunset:&nbsp;</span>
-  <span id="sunset"> </span>
-</div>
-
-<div class="in">
-  <span class="label">Azimuth:&nbsp;</span>
-  <span id="azimuth"> </span>
-  <input type="text" id="azbox"   name="az"     size="5">
-</div>
-
-<div class="in">
-  <span class="label">Elevation:&nbsp;</span>
-  <span id="elevation"> </span>
-  <input type="text" id="elbox"   name="el"     size="5">
-</div>
-
-
-
-</body>
 </html>

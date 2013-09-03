@@ -1,21 +1,20 @@
 body {
-    font-family: Arial;
-    font-size: 11px; 
+    font-family: 'Oxygen', sans-serif;
+    background-color: #FFFFF0;
 }
-span.label {
-}
-div.in {
-    border: 1px solid black;
-    width: 400px;
-    padding: 8px;
-}
+
 table {
+	margin: 100px;
     border-collapse:collapse;
-    width: 800px;
+    width: 400px;
+    background-color: #FFFFFF;
 }
+
 table, th, td {
     border: 1px solid black;
+    font-size: 24;
 }
-td {
-    padding: 8px;
+
+th, td {
+    padding: 20px;
 }
