@@ -3,8 +3,11 @@ body {
     background-color: #FFFFF0;
 }
 
+div {
+	margin: 20px;
+}
+
 table {
-	margin: 100px;
     border-collapse:collapse;
     width: 400px;
     background-color: #FFFFFF;
