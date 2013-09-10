@@ -21,7 +21,7 @@ function drawHand(ctx,angle,color,type) {
   var mid = 200;
   if (type==0) {
     // Minute hand
-    len = 190;
+    len = 180;
     wid = 4;
   } else if (type==1) {
     // Hour hand
@@ -73,51 +73,47 @@ function drawClockFace(ctx) {
   
 }
 
-function showTime() {
-  // Sunset algorithm courtesy of http://prestonhunt.com/story/124
-  var lat = 42.363339;
-  var lon = -71.192136;
-  var d = new Date();
-  var td = new SunriseSunset(
+function getSunsetTime(d,lat,lon) {
+  var sunsetObj = new SunriseSunset(
     d.getFullYear(), 
     d.getMonth()+1, 
     d.getDate(), 
     lat, lon);
-  var tdp1 = new SunriseSunset(
-    d.getFullYear(), 
-    d.getMonth()+1, 
-    d.getDate()+1, 
-    lat, lon);
-  var tdp2 = new SunriseSunset(
-    d.getFullYear(), 
-    d.getMonth()+1, 
-    d.getDate()+2, 
-    lat, lon);
-  var tdp3 = new SunriseSunset(
-    d.getFullYear(), 
-    d.getMonth()+1, 
-    d.getDate()+3, 
-    lat, lon);
-  var sunsetToday    = td.sunsetLocalHours(-1*d.getTimezoneOffset()/60);
-  var sunsetTodayPlus1 = tdp1.sunsetLocalHours(-1*d.getTimezoneOffset()/60);
-  var sunsetTodayPlus2 = tdp2.sunsetLocalHours(-1*d.getTimezoneOffset()/60);
-  var sunsetTodayPlus3 = tdp3.sunsetLocalHours(-1*d.getTimezoneOffset()/60);
-  var diff = sunsetToday - sunsetTodayPlus1;
-  $(".time").html(
+  var tzCorrection = -1*d.getTimezoneOffset()/60;
+  return sunsetObj.sunsetLocalHours(tzCorrection); 
+}
+
+
+function showTime() {
+  var lat = 42.363339;
+  var lon = -71.192136;
+  var d = new Date();
+ 
+  var ctx = $('#canvas')[0].getContext("2d");
+  drawClockFace(ctx);
+
+  var sunsetToday = getSunsetTime(d,lat,lon) 
+  drawHourHand(ctx,sunsetToday);
+  drawMinuteHand(ctx,sunsetToday);
+  d.setDate(d.getDate()+1);
+  var sunsetTomorrow = getSunsetTime(d,lat,lon) 
+  
+  d.setDate(d.getDate()+1);
+  drawMinuteHand(ctx,getSunsetTime(d,lat,lon),"#E0E0E0");
+  d.setDate(d.getDate()+1);
+  drawMinuteHand(ctx,getSunsetTime(d,lat,lon),"#B0B0B0");
+  d.setDate(d.getDate()+1);
+  drawMinuteHand(ctx,sunsetTomorrow,"#808080");
+  drawMinuteHand(ctx,sunsetToday,"#000000");
+
+  var diff = sunsetToday - sunsetTomorrow;
+    $(".time").html(
       "<table>" +
       "<tr><th colspan='2'>Sunset for " + d.toDateString() + "</th></tr>" +
       "<tr><td>Today</td><td>" + decToHms(sunsetToday) + "</td></tr>" + 
-      "<tr><td>Tomorrow</td><td>" + decToHms(sunsetTodayPlus1) + "</td></tr>" + 
+      "<tr><td>Tomorrow</td><td>" + decToHms(sunsetTomorrow) + "</td></tr>" + 
       "<tr><td>Difference</td><td>" + decToMs(diff) + "</td></tr>" +
       "</table>"
     );  
 
-  var ctx = $('#canvas')[0].getContext("2d");
-  drawClockFace(ctx);
-
-  drawHourHand(ctx,sunsetToday);
-  drawMinuteHand(ctx,sunsetTodayPlus3,"#E0E0E0");
-  drawMinuteHand(ctx,sunsetTodayPlus2,"#B0B0B0");
-  drawMinuteHand(ctx,sunsetTodayPlus1,"#808080");
-  drawMinuteHand(ctx,sunsetToday,"#000000");
 }
