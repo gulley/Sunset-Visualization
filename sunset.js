@@ -39,7 +39,7 @@ function drawHand(ctx,angle,color,type) {
 function drawMinuteHand(ctx,tIn,color) {
   var hours = Math.floor(tIn);
   var minutes = Math.floor((tIn - hours)*60);
-  var angle = 2*Math.PI*(minutes/60.0);
+  var angle = 2*Math.PI*(tIn - hours);
   // Correct for the fact that east corresponds to 0 degrees, whereas north is 12:00
   angle -= Math.PI/2;
   drawHand(ctx,angle,color,0)
