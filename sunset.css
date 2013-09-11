@@ -15,9 +15,9 @@ table {
 
 table, th, td {
     border: 1px solid black;
-    font-size: 24;
+    font-size: 14;
 }
 
 th, td {
-    padding: 20px;
+    padding: 10px;
 }
