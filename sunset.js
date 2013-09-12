@@ -131,8 +131,9 @@ function showTime() {
   }
 
   var sunsetToday = getSunsetTime(td, lat, lon)
-  td.setDate(td.getDate() + 1);
-  var sunsetTomorrow = getSunsetTime(td, lat, lon)
+  var tm = new Date();
+  tm.setDate(tm.getDate() + 1);
+  var sunsetTomorrow = getSunsetTime(tm, lat, lon)
 
   drawMinuteHand(ctx, sunsetToday, "#000000", 6);
   drawHourHand(ctx, sunsetToday);
