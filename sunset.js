@@ -158,4 +158,6 @@ function showTime() {
     "</table>"
   );
 
+  // navigator.geolocation.getCurrentPosition(function showPosition(position) { alert(position.coords.latitude + "," + position.coords.longitude) } )
+
 }
