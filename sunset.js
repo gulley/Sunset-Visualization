@@ -110,9 +110,21 @@ function decToHex(val, numDigits) {
   return str
 }
 
-function showTime() {
-  var lat = 42.363339;
-  var lon = -71.192136;
+function startUp() {
+  navigator.geolocation.getCurrentPosition(showTime);
+}
+
+function showTime(position) {
+  var lat = 0.0;
+  var lon = 0.0;
+  if (true) {
+    lat = 42.363339;
+    lon = -71.192136;
+  } else {
+    lat = position.coords.latitude;
+    lon = position.coords.longitude;
+  }
+
   var td = new Date();
 
   var ctx = $('#canvas')[0].getContext("2d");
@@ -157,7 +169,5 @@ function showTime() {
     "<tr><td>Days from Now</td><td>" + daysBetween + "</td></tr>" +
     "</table>"
   );
-
-  // navigator.geolocation.getCurrentPosition(function showPosition(position) { alert(position.coords.latitude + "," + position.coords.longitude) } )
 
 }
