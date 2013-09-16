@@ -117,13 +117,8 @@ function startUp() {
 function showTime(position) {
   var lat = 0.0;
   var lon = 0.0;
-  if (true) {
-    lat = 42.363339;
-    lon = -71.192136;
-  } else {
-    lat = position.coords.latitude;
-    lon = position.coords.longitude;
-  }
+  lat = position.coords.latitude;
+  lon = position.coords.longitude;
 
   var td = new Date();
 
