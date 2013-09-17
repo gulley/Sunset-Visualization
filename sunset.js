@@ -155,7 +155,7 @@ function showTime(position) {
   $(".time").html(
     "<table>" +
     "<tr><th colspan='2'>" +
-    "<a href='https://www.google.com/maps/?ll=" + lat + "," + lon + "'>" + 
+    "<a href='https://www.google.com/maps/?q=" + lat + "," + lon + "'>" + 
     "Sunset for " + td.toDateString() + "</a></th></tr>" +
     "<tr><td>Today</td><td>" + decToHms(sunsetToday) + "</td></tr>" +
     "<tr><td>Tomorrow</td><td>" + decToHms(sunsetTomorrow) + "</td></tr>" +
