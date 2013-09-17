@@ -1,6 +1,10 @@
 JavaScript Sun Calculations
 ======
 
+A working version of this page is deployed here:
+
+http://www.starchamber.com/sunset
+
 This is a file for determining what the time of sunset will be doing for the next several days.
 
 * Sunset algorithm is courtesy of http://prestonhunt.com/story/124
