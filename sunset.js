@@ -111,15 +111,22 @@ function decToHex(val, numDigits) {
 }
 
 function startUp() {
-  navigator.geolocation.getCurrentPosition(showTime);
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(setLatLon);
+  } else {
+    var lat = 42.0;
+    var lon = -71.2;
+    showTime(lat,lon);
+  }
 }
 
-function showTime(position) {
-  var lat = 0.0;
-  var lon = 0.0;
-  lat = position.coords.latitude;
-  lon = position.coords.longitude;
+function setLatLon(position) {
+  var lat = position.coords.latitude;
+  var lon = position.coords.longitude;
+  showTime(lat,lon);
+}
 
+function showTime(lat,lon) {
   var td = new Date();
 
   var ctx = $('#canvas')[0].getContext("2d");
@@ -154,9 +161,8 @@ function showTime(position) {
 
   $(".time").html(
     "<table>" +
-    "<tr><th colspan='2'>" +
-    "<a href='https://www.google.com/maps/?q=" + lat + "," + lon + "'>" + 
-    "Sunset for " + td.toDateString() + "</a></th></tr>" +
+    "<tr><th colspan='2'>" + "Sunset for " + td.toDateString() + " " + 
+    "<a href='https://www.google.com/maps/?q=" + lat + "," + lon + "'>" + "Here</a></th></tr>" +
     "<tr><td>Today</td><td>" + decToHms(sunsetToday) + "</td></tr>" +
     "<tr><td>Tomorrow</td><td>" + decToHms(sunsetTomorrow) + "</td></tr>" +
     "<tr><td>Difference</td><td>" + decToMs(diff) + "</td></tr>" +
