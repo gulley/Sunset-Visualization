@@ -1,5 +1,5 @@
 body {
-    font-family: 'Oxygen', sans-serif;
+    font-family: 'Architects Daughter', cursive;
     background-color: #FFFFF0;
 }
 
@@ -14,8 +14,8 @@ table {
 }
 
 table, th, td {
+    font-size: 20px;
     border: 1px solid black;
-    font-size: 14;
 }
 
 th, td {
