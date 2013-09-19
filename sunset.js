@@ -72,16 +72,28 @@ SC.Sunset = {
       var hours = Math.floor(tIn);
       var minutes = Math.floor((tIn - hours) * 60);
       var seconds = Math.floor((tIn - hours - minutes / 60) * 60 * 60);
+      var pmStr = " AM";
       if (hours > 12) {
         hours -= 12;
+     	pmStr = " PM";
       }
-      return hours + ":" + SC.Sunset.pad(minutes) + ":" + SC.Sunset.pad(seconds);
+      return hours + ":" + SC.Sunset.pad(minutes) + ":" + SC.Sunset.pad(seconds) + pmStr;
     },
 
     toMs : function(tIn) {
       var minutes = Math.floor(tIn * 60);
       var seconds = Math.floor((tIn - minutes / 60) * 60 * 60);
-      return minutes + ":" + SC.Sunset.pad(seconds);
+      var minStr = minutes + " minute";
+      if (minutes > 1) {
+      	minStr += "s";
+      } else if (minutes < 1) {
+      	minStr = "";
+      };
+      var secStr = seconds + " second";
+      if (seconds != 1) { 
+      	secStr += "s";
+      }
+      return minStr + " " + secStr;
     }
 
   },
@@ -172,8 +184,8 @@ SC.Sunset = {
 
     $(".time").html(
       "<table>" +
-      "<tr><th colspan='2'>" + "Sunset for " + td.toDateString() + " " + 
-      "<a href='https://www.google.com/maps/?q=" + lat + "," + lon + "'>" + "Here</a></th></tr>" +
+      "<tr><th colspan='2'>" + "Sunset for " + td.toDateString() + "<br/>" + 
+      "<a href='https://www.google.com/maps/?q=" + lat + "," + lon + "'>at this location</a></th></tr>" +
       "<tr><td>Today</td><td>" + SC.Sunset.dec.toHms(sunsetToday) + "</td></tr>" +
       "<tr><td>Tomorrow</td><td>" + SC.Sunset.dec.toHms(sunsetTomorrow) + "</td></tr>" +
       "<tr><td>Difference</td><td>" + SC.Sunset.dec.toMs(diff) + "</td></tr>" +
