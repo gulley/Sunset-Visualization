@@ -21,3 +21,19 @@ table, th, td {
 th, td {
     padding: 10px;
 }
+
+.content {
+	display: table-row;
+}
+
+.clock {
+	background: transparent url('clock_face.png') top left no-repeat;
+	display: table-cell;
+	vertical-align: top;
+}
+
+.time {
+	display: table-cell;
+	vertical-align: top;
+	padding-left: 15px;
+}
