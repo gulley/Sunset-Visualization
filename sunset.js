@@ -1,6 +1,8 @@
 // requires jQuery
 
 var SC = SC || {};
+var defaultLat = 42.0;
+var defaultLon = -71.2;
 
 SC.Sunset = {
   
@@ -135,11 +137,9 @@ SC.Sunset = {
 
   startUp : function() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon);
+      navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon, SC.Sunset.showTime(defaultLat,defaultLon));
     } else {
-      var lat = 42.0;
-      var lon = -71.2;
-      SC.Sunset.showTime(lat,lon);
+      SC.Sunset.showTime(defaultLat,defaultLon);
     }
   },
 
