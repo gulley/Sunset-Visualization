@@ -7,6 +7,7 @@ var defaultLon = -71.2;
 SC.Sunset = {
   
   draw : {
+
     hand : function(ctx, angle, color, length, width) {
         var mid = 200;
         ctx.beginPath();
@@ -153,7 +154,7 @@ SC.Sunset = {
     var td = new Date();
 
     var ctx = $('#canvas')[0].getContext("2d");
-    SC.Sunset.draw.clockFace(ctx, "face");
+    //SC.Sunset.draw.clockFace(ctx, "face");
 
     d = new Date();
     var clr = "";
