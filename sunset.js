@@ -138,7 +138,7 @@ SC.Sunset = {
 
   startUp : function() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon, SC.Sunset.showTime(defaultLat,defaultLon));
+      navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon);
     } else {
       SC.Sunset.showTime(defaultLat,defaultLon);
     }
@@ -154,7 +154,7 @@ SC.Sunset = {
     var td = new Date();
 
     var ctx = $('#canvas')[0].getContext("2d");
-    //SC.Sunset.draw.clockFace(ctx, "face");
+    // SC.Sunset.draw.clockFace(ctx, "face");
 
     d = new Date();
     var clr = "";
