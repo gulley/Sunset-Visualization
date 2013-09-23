@@ -139,7 +139,7 @@ SC.Sunset = {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon, SC.Sunset.showDefault);
     } else {
-      SC.Sunset.showTime(defaultLat,defaultLon);
+      SC.Sunset.showDefault();
     }
   },
 
