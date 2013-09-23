@@ -137,10 +137,14 @@ SC.Sunset = {
 
   startUp : function() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon, SC.Sunset.showTime(defaultLat,defaultLon));
+      navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon, SC.Sunset.showDefault);
     } else {
       SC.Sunset.showTime(defaultLat,defaultLon);
     }
+  },
+
+  showDefault : function() {
+    SC.Sunset.showTime(defaultLat,defaultLon);
   },
 
   setLatLon : function(position) {
