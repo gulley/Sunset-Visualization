@@ -1,8 +1,8 @@
 // requires jQuery
 
 var SC = SC || {};
-var defaultLat = 42.0;
-var defaultLon = -71.2;
+var defaultLat = 42.3653766;
+var defaultLon = -71.1853512;
 
 SC.Sunset = {
   
