@@ -184,8 +184,8 @@ SC.Sunset = {
 
     var earliestSunset = SC.Sunset.getEarliestSunset(lat, lon);
 
-    var diff = sunsetToday - sunsetTomorrow;
-    var daysBetween = Math.floor((earliestSunset - new Date()) / (1000 * 60 * 60 * 24));
+    var diff = Math.abs(sunsetToday - sunsetTomorrow);
+    var daysBetween = Math.floor((earliestSunset - new Date()) / (1000 * 60 * 60 * 24)) + 1;
 
     $(".time").html(
       "<table>" +
