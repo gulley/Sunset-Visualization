@@ -102,24 +102,25 @@ SC.Sunset = {
   },
 
   getEarliestSunset : function(lat, lon) {
-    var dToday = new Date();
-    var monthDayStr = "";
-    // Start at the equinox and walk forward toward the winter solstice
-    if (lat > 0) {
-      monthDayStr = "9/21/";
-    } else {
-      monthDayStr = "3/21/";
+    var day = new Date();
+    var earliestDay = day;
+    var latestDay = day;
+    var t = 0.0;
+    var max = 0.0;
+    var min = 24.0;
+    // Cycle through 365 days and find the minimum
+    for (i=0;i<365;i++) {
+		t = SC.Sunset.getSunsetTime(day, lat, lon);
+		if (t < min) {
+			min = t;
+			earliestDay = new Date(day);
+		} else if (t > max) {
+			max = t;
+			latestDay = new Date(day);
+		}
+    	day.setDate(day.getDate() + 1);
     }
-    var dateStr = monthDayStr + d.getFullYear();
-    dToday = new Date(dateStr);
-    dTomorrow = new Date(dateStr);
-    dTomorrow.setDate(dTomorrow.getDate() + 1);
-    // As long as the sunset tomorrow is earlier than today, keep going forward in time
-    while (SC.Sunset.getSunsetTime(dToday, lat, lon) > SC.Sunset.getSunsetTime(dTomorrow, lat, lon)) {
-      dTomorrow.setDate(dTomorrow.getDate() + 1);
-      dToday.setDate(dToday.getDate() + 1);
-    }
-    return dToday;
+	return earliestDay;
   },
 
   getSunsetTime : function(d, lat, lon) {
