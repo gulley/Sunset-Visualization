@@ -3,7 +3,7 @@ JavaScript Sun Calculations
 
 A working version of this page is deployed here:
 
-http://www.starchamber.com/sunset
+http://gulley.github.io/
 
 This is a file for determining what the time of sunset will be doing for the next several days.
 
