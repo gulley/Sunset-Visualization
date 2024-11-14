@@ -1,22 +1,527 @@
-<!DOCTYPE HTML>
+<!DOCTYPE HTML> 
 <html>
   <head>
-  	<title>Sunset Times</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> 
-    <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+    <title>Sunset Times</title>
+    <!-- Material Design Lite CSS and JS -->
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-red.min.css" />
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="sunset.css">
-    <script type="text/javascript" src="SunriseSunset.js"></script>
-    <script type="text/javascript" src="sunset.js"></script>
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
+
+    <style>
+      html, body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #FAFAFA;
+        margin: 0;
+        padding: 0;
+      }
+
+      .mdl-layout__content {
+        padding: 20px;
+      }
+
+      .clock-card {
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+      }
+
+      .clock-card .mdl-card__supporting-text {
+        text-align: center;
+      }
+
+      .time-table th, .time-table td {
+        text-align: left;
+      }
+
+      .time-table th.mdl-data-table__cell--non-numeric {
+        text-align: left;
+      }
+
+      .clock-canvas {
+        display: block;
+        margin: 20px auto;
+      }
+    </style>
+
+    <script type="text/javascript">
+      //
+      // SunriseSunset Class (Refactored to ES6)
+      //
+      class SunriseSunset {
+        constructor(utcFullYear, utcMonth, utcDay, latitude, longitude) {
+          this.zenith = 90 + 50/60; // offical = 90 degrees 50'
+                                    // civil = 96 degrees
+                                    // nautical = 102 degrees
+                                    // astronomical = 108 degrees
+
+          this.utcFullYear = utcFullYear;
+          this.utcMonth = utcMonth;
+          this.utcDay = utcDay;
+          this.latitude = latitude;
+          this.longitude = longitude;
+
+          this.rising = true; // set to true for sunrise, false for sunset
+          this.lngHour = this.longitude / 15;
+        }
+
+        sin(deg) {
+          return Math.sin(deg * Math.PI / 180);
+        }
+
+        cos(deg) {
+          return Math.cos(deg * Math.PI / 180);
+        }
+
+        tan(deg) {
+          return Math.tan(deg * Math.PI / 180);
+        }
+
+        asin(x) {
+          return (180/Math.PI) * Math.asin(x);
+        }
+
+        acos(x) {
+          return (180/Math.PI) * Math.acos(x);
+        }
+
+        atan(x) {
+          return (180/Math.PI) * Math.atan(x);
+        }
+
+        getDOY() {
+          const {utcMonth: month, utcFullYear: year, utcDay: day} = this;
+          const N1 = Math.floor(275 * month / 9);
+          const N2 = Math.floor((month + 9) / 12);
+          const N3 = (1 + Math.floor((year - 4 * Math.floor(year / 4) + 2) / 3));
+          return N1 - (N2 * N3) + day - 30;
+        }
+
+        approximateTime() {
+          const doy = this.getDOY();
+          if (this.rising) {
+            return doy + ((6 - this.lngHour) / 24);
+          } else {
+            return doy + ((18 - this.lngHour) / 24);
+          }
+        }
+
+        meanAnomaly() {
+          const t = this.approximateTime();
+          return (0.9856 * t) - 3.289;
+        }
+
+        trueLongitude() {
+          const M = this.meanAnomaly();
+          const L = M + (1.916 * this.sin(M)) + (0.020 * this.sin(2 * M)) + 282.634;
+          return L % 360;
+        }
+
+        rightAscension() {
+          const L = this.trueLongitude();
+          let RA = this.atan(0.91764 * this.tan(L));
+          RA %= 360;
+
+          const Lquadrant = (Math.floor(L/90)) * 90;
+          const RAquadrant = (Math.floor(RA/90)) * 90;
+          RA = RA + (Lquadrant - RAquadrant);
+          RA /= 15;
+
+          return RA;
+        }
+
+        sinDec() {
+          const L = this.trueLongitude();
+          return 0.39782 * this.sin(L);
+        }
+
+        cosDec() {
+          return this.cos(this.asin(this.sinDec()));
+        }
+
+        localMeanTime() {
+          const cosH = (this.cos(this.zenith) - (this.sinDec() * this.sin(this.latitude))) / (this.cosDec() * this.cos(this.latitude));
+
+          if (cosH > 1) {
+            return "the sun never rises on this location (on the specified date)";
+          } else if (cosH < -1) {
+            return "the sun never sets on this location (on the specified date)";
+          } else {
+            const H = this.rising ? 360 - this.acos(cosH) : this.acos(cosH);
+            const RA = this.rightAscension();
+            const t = this.approximateTime();
+            return H / 15 + RA - (0.06571 * t) - 6.622;
+          }
+        }
+
+        hoursRange(h) {
+          return (h+24) % 24;
+        }
+
+        UTCTime() {
+          const T = this.localMeanTime();
+          const UT = T - this.lngHour;
+          return this.hoursRange(UT);
+        }
+
+        sunriseUtcHours() {
+          this.rising = true;
+          return this.UTCTime();
+        }
+
+        sunsetUtcHours() {
+          this.rising = false;
+          return this.UTCTime();
+        }
+
+        sunriseLocalHours(gmt) {
+          return this.hoursRange(gmt + this.sunriseUtcHours());
+        }
+
+        sunsetLocalHours(gmt) {
+          return this.hoursRange(gmt + this.sunsetUtcHours());
+        }
+
+        // utcCurrentHours is the time that you would like to test for daylight, in hours, at UTC
+        // For example, to test if it's daylight in Tokyo (GMT+9) at 10:30am, pass in
+        // utcCurrentHours=1.5, which corresponds to 1:30am UTC.
+        isDaylight(utcCurrentHours) {
+          const sunriseHours = this.sunriseUtcHours();
+          const sunsetHours = this.sunsetUtcHours();
+
+          if (typeof sunriseHours === "string" || typeof sunsetHours === "string") {
+            return false; // If sunrise or sunset never occurs, assume no daylight
+          }
+
+          if (sunsetHours < sunriseHours) {
+            // Either the sunrise or sunset time is for tomorrow
+            if (utcCurrentHours > sunriseHours) {
+              return true;
+            } else if (utcCurrentHours < sunsetHours) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+
+          if (utcCurrentHours >= sunriseHours) {
+            return utcCurrentHours < sunsetHours;
+          }
+
+          return false;
+        }
+      }
+
+      // Replacing jQuery usage with modern JavaScript
+      const SC = {};
+
+      const defaultLat = 42.3653766;
+      const defaultLon = -71.1853512;
+
+      SC.Sunset = {
+        
+        draw: {
+
+          hand: (ctx, angle, color, length, width) => {
+            const mid = 200;
+            ctx.beginPath();
+            ctx.moveTo(mid, mid);
+            ctx.lineTo(mid + length * Math.cos(angle), mid + length * Math.sin(angle));
+            ctx.lineWidth = width;
+            ctx.strokeStyle = color;
+            ctx.stroke();
+          },
+
+          minuteHand: (ctx, tIn, color, width) => {
+            if (typeof tIn === 'string') return; // If invalid time
+            const hours = Math.floor(tIn);
+            const minutes = Math.floor((tIn - hours) * 60);
+            let angle = 2 * Math.PI * (tIn - hours);
+            // Correct for the fact that east corresponds to 0 degrees, whereas north is 12:00
+            angle -= Math.PI / 2;
+            const length = 180;
+            SC.Sunset.draw.hand(ctx, angle, color, length, width);
+          },
+
+          hourHand: (ctx, tIn) => {
+            if (typeof tIn === 'string') return; // If invalid time
+            let hours = Math.floor(tIn);
+            const minutes = Math.floor((tIn - hours) * 60);
+            let angle = 2 * Math.PI * ((hours + minutes / 60.0) / 12.0);
+            // Correct for the fact that east corresponds to 0 degrees, whereas north is 12:00
+            angle -= Math.PI / 2;
+            SC.Sunset.draw.hand(ctx, angle, "#000000", 100, 10);
+          },
+
+          clockFace: (ctx, option) => {
+            // Draw the circle to make the clock face
+            const mid = ctx.canvas.getAttribute("width") / 2;
+
+            if (option === "face") {
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.arc(mid, mid, 195, 0, Math.PI * 2, true);
+              ctx.closePath();
+              ctx.fillStyle = "#FFFFFF";
+              ctx.fill();
+              ctx.stroke();
+
+              // Draw the hour numbers on the clock
+              ctx.font = "24px Roboto";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+              ctx.fillStyle = "#000";
+
+              const numberRadius = 160; // radius for numbers 
+              for (let i = 1; i <= 12; i++) {
+                const angle = (i * 30) * Math.PI / 180; // each hour is 30 degrees
+                const x = mid + numberRadius * Math.cos(angle - Math.PI / 2);
+                const y = mid + numberRadius * Math.sin(angle - Math.PI / 2);
+                ctx.fillText(i.toString(), x, y);
+              }
+
+              // Draw minute marks for each 5-minute increment 
+              for (let mark = 0; mark < 60; mark++) {
+                const angle = (mark * 6) * Math.PI / 180; // each minute is 6 degrees
+                const length = (mark % 5 === 0) ? 10 : 5; // longer marks for hours
+                const innerRadius = 195 - length;
+                const outerRadius = 195;
+                const x1 = mid + innerRadius * Math.cos(angle - Math.PI / 2);
+                const y1 = mid + innerRadius * Math.sin(angle - Math.PI / 2);
+                const x2 = mid + outerRadius * Math.cos(angle - Math.PI / 2);
+                const y2 = mid + outerRadius * Math.sin(angle - Math.PI / 2);
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.lineWidth = (mark % 5 === 0) ? 4 : 1.5;
+                ctx.stroke();
+              }
+            }
+
+            if (option === "nose") {
+              ctx.beginPath();
+              ctx.arc(mid, mid, 10, 0, Math.PI * 2, true);
+              ctx.closePath();
+              ctx.fillStyle = "#000000";
+              ctx.fill();
+            }
+          }
+        },
+
+        dec: {
+        
+          toHex: (val, numDigits) => {
+            let str = val.toString(16);
+            while (str.length < numDigits) {
+              str = "0" + str;
+            }
+            return str;
+          },
+
+          toHms: (tIn) => {
+            if (typeof tIn === 'string') return tIn;
+            let hours = Math.floor(tIn);
+            const minutes = Math.floor((tIn - hours) * 60);
+            const seconds = Math.floor((tIn - hours - minutes / 60) * 60 * 60);
+            let pmStr = " AM";
+            if (hours > 12) {
+              hours -= 12;
+              pmStr = " PM";
+            } else if (hours === 12) {
+              pmStr = " PM";
+            } else if (hours === 0) {
+              hours = 12;
+            }
+            return `${hours}:${SC.Sunset.pad(minutes)}:${SC.Sunset.pad(seconds)}${pmStr}`;
+          },
+
+          toMs: (tIn) => {
+            const minutes = Math.floor(tIn * 60);
+            const seconds = Math.floor((tIn - minutes / 60) * 3600);
+            const minStr = `${minutes} minute${minutes === 1 ? "" : "s"}`;
+            const secStr = `${seconds} second${seconds === 1 ? "" : "s"}`;
+            if (minutes <= 0) {
+              return secStr;
+            } else if (seconds <= 0) {
+              return minStr;
+            } else {
+              return `${minStr} ${secStr}`;
+            }
+          }
+
+        },
+
+        getEarliestSunset: (lat, lon) => {
+          const day = new Date();
+          let earliestDay = new Date(day);
+          let latestDay = new Date(day);
+          let t = 0.0;
+          let max = 0.0;
+          let min = 24.0;
+          // Cycle through 365 days and find the minimum
+          for (let i = 0; i < 365; i++) {
+            const sunsetTime = SC.Sunset.getSunsetTime(day, lat, lon);
+            if (typeof sunsetTime === 'number') {
+              if (sunsetTime < min) {
+                min = sunsetTime;
+                earliestDay = new Date(day);
+              } else if (sunsetTime > max) {
+                max = sunsetTime;
+                latestDay = new Date(day);
+              }
+            }
+            day.setDate(day.getDate() + 1);
+          }
+          return earliestDay;
+        },
+
+        getSunsetTime: (d, lat, lon) => {
+          const sunsetObj = new SunriseSunset(
+            d.getFullYear(),
+            d.getMonth() + 1,
+            d.getDate(),
+            lat, lon
+          );
+          const tzCorrection = -1 * d.getTimezoneOffset() / 60;
+          return sunsetObj.sunsetLocalHours(tzCorrection);
+        },
+
+        pad: (n) => (n < 10) ? ("0" + n) : n,
+
+        startUp: () => {
+          const storedLat = localStorage.getItem('sunsetLat');
+          const storedLon = localStorage.getItem('sunsetLon');
+          if (storedLat && storedLon) {
+            SC.Sunset.showTime(parseFloat(storedLat), parseFloat(storedLon));
+          } else {
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon, SC.Sunset.showDefault);
+            } else {
+              SC.Sunset.showDefault();
+            }
+          }
+        },
+
+        showDefault: () => {
+          SC.Sunset.showTime(defaultLat, defaultLon);
+        },
+
+        setLatLon: (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          localStorage.setItem('sunsetLat', lat);
+          localStorage.setItem('sunsetLon', lon);
+          SC.Sunset.showTime(lat, lon);
+        },
+
+        showTime: (lat, lon) => {
+          const td = new Date();
+
+          const canvas = document.getElementById('canvas');
+          const ctx = canvas.getContext("2d");
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          SC.Sunset.draw.clockFace(ctx, "face");
+
+          const d = new Date();
+          let clr = "";
+          let val = 0;
+          const maxDays = 14;
+          const wid = 1;
+          for (let i = 0; i < maxDays; i++) {
+            val = Math.floor(255 * (i / maxDays));
+            clr = "#" + SC.Sunset.dec.toHex(val, 2) + SC.Sunset.dec.toHex(val, 2) + "FF";
+            d.setDate(d.getDate() + 1);
+            const sunsetDay = SC.Sunset.getSunsetTime(d, lat, lon);
+            if (typeof sunsetDay === 'number') {
+              SC.Sunset.draw.minuteHand(ctx, sunsetDay, clr, wid);
+            }
+          }
+
+          const sunsetToday = SC.Sunset.getSunsetTime(td, lat, lon);
+          const tm = new Date();
+          tm.setDate(tm.getDate() + 1);
+          const sunsetTomorrow = SC.Sunset.getSunsetTime(tm, lat, lon);
+
+          if (typeof sunsetToday === 'number') {
+            SC.Sunset.draw.minuteHand(ctx, sunsetToday, "#000000", 6);
+            SC.Sunset.draw.hourHand(ctx, sunsetToday);
+          }
+
+          SC.Sunset.draw.clockFace(ctx, "nose");
+
+          const earliestSunset = SC.Sunset.getEarliestSunset(lat, lon);
+
+          let diff = 0;
+          if (typeof sunsetToday === 'number' && typeof sunsetTomorrow === 'number') {
+            diff = Math.abs(sunsetToday - sunsetTomorrow);
+          }
+          const daysBetween = Math.floor((earliestSunset - new Date()) / (1000 * 60 * 60 * 24)) + 1;
+
+          document.querySelector(".time").innerHTML = `
+            <table class='mdl-data-table mdl-js-data-table time-table'>
+              <thead>
+                <tr>
+                  <th class='mdl-data-table__cell--non-numeric' colspan='2'>
+                    Sunset for ${td.toDateString()}<br/>
+                    <a class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect' href='https://www.google.com/maps/?q=${lat},${lon}'>
+                      View Location on Map
+                    </a>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class='mdl-data-table__cell--non-numeric'>Today</td>
+                  <td>${SC.Sunset.dec.toHms(sunsetToday)}</td>
+                </tr>
+                <tr>
+                  <td class='mdl-data-table__cell--non-numeric'>Tomorrow</td>
+                  <td>${SC.Sunset.dec.toHms(sunsetTomorrow)}</td>
+                </tr>
+                <tr>
+                  <td class='mdl-data-table__cell--non-numeric'>Difference</td>
+                  <td>${SC.Sunset.dec.toMs(diff)}</td>
+                </tr>
+                <tr>
+                  <th class='mdl-data-table__cell--non-numeric' colspan='2'>Earliest Sunset</th>
+                </tr>
+                <tr>
+                  <td class='mdl-data-table__cell--non-numeric'>Date</td>
+                  <td>${earliestSunset.toDateString()}</td>
+                </tr>
+                <tr>
+                  <td class='mdl-data-table__cell--non-numeric'>Time</td>
+                  <td>${SC.Sunset.dec.toHms(SC.Sunset.getSunsetTime(earliestSunset, lat, lon))}</td>
+                </tr>
+                <tr>
+                  <td class='mdl-data-table__cell--non-numeric'>Days from Now</td>
+                  <td>${daysBetween}</td>
+                </tr>
+              </tbody>
+            </table>`;
+        }
+      };
+    </script>
   </head>
 
-  <body onload="SC.Sunset.startUp()">
-    <div class='content'>
-      <div class='clock'>
-        <canvas id="canvas" width="400" height="400"></canvas>
+  <body class="mdl-layout mdl-js-layout mdl-layout--fixed-header" onload="SC.Sunset.startUp()">
+    <header class="mdl-layout__header">
+      <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">Sunset Times</span>
       </div>
-      <div class="time"></div>
-    </div>
+    </header>
+    <main class="mdl-layout__content">
+      <div class="clock-card mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title">
+          <h2 class="mdl-card__title-text">Sunset Clock</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+          <canvas id="canvas" class="clock-canvas" width="400" height="400"></canvas>
+        </div>
+        <div class="mdl-card__actions mdl-card--border time"></div>
+      </div>
+    </main>
   </body>
-
 </html>
