@@ -9,6 +9,9 @@
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
 
+    <!-- SunCalc library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+
     <style>
       html, body {
         font-family: 'Roboto', sans-serif;
@@ -46,222 +49,82 @@
     </style>
 
     <script type="text/javascript">
-      //
-      // SunriseSunset Class (Refactored to ES6)
-      //
-      class SunriseSunset {
-        constructor(utcFullYear, utcMonth, utcDay, latitude, longitude) {
-          this.zenith = 90 + 50/60; // offical = 90 degrees 50'
-                                    // civil = 96 degrees
-                                    // nautical = 102 degrees
-                                    // astronomical = 108 degrees
-
-          this.utcFullYear = utcFullYear;
-          this.utcMonth = utcMonth;
-          this.utcDay = utcDay;
-          this.latitude = latitude;
-          this.longitude = longitude;
-
-          this.rising = true; // set to true for sunrise, false for sunset
-          this.lngHour = this.longitude / 15;
-        }
-
-        sin(deg) {
-          return Math.sin(deg * Math.PI / 180);
-        }
-
-        cos(deg) {
-          return Math.cos(deg * Math.PI / 180);
-        }
-
-        tan(deg) {
-          return Math.tan(deg * Math.PI / 180);
-        }
-
-        asin(x) {
-          return (180/Math.PI) * Math.asin(x);
-        }
-
-        acos(x) {
-          return (180/Math.PI) * Math.acos(x);
-        }
-
-        atan(x) {
-          return (180/Math.PI) * Math.atan(x);
-        }
-
-        getDOY() {
-          const {utcMonth: month, utcFullYear: year, utcDay: day} = this;
-          const N1 = Math.floor(275 * month / 9);
-          const N2 = Math.floor((month + 9) / 12);
-          const N3 = (1 + Math.floor((year - 4 * Math.floor(year / 4) + 2) / 3));
-          return N1 - (N2 * N3) + day - 30;
-        }
-
-        approximateTime() {
-          const doy = this.getDOY();
-          if (this.rising) {
-            return doy + ((6 - this.lngHour) / 24);
-          } else {
-            return doy + ((18 - this.lngHour) / 24);
-          }
-        }
-
-        meanAnomaly() {
-          const t = this.approximateTime();
-          return (0.9856 * t) - 3.289;
-        }
-
-        trueLongitude() {
-          const M = this.meanAnomaly();
-          const L = M + (1.916 * this.sin(M)) + (0.020 * this.sin(2 * M)) + 282.634;
-          return L % 360;
-        }
-
-        rightAscension() {
-          const L = this.trueLongitude();
-          let RA = this.atan(0.91764 * this.tan(L));
-          RA %= 360;
-
-          const Lquadrant = (Math.floor(L/90)) * 90;
-          const RAquadrant = (Math.floor(RA/90)) * 90;
-          RA = RA + (Lquadrant - RAquadrant);
-          RA /= 15;
-
-          return RA;
-        }
-
-        sinDec() {
-          const L = this.trueLongitude();
-          return 0.39782 * this.sin(L);
-        }
-
-        cosDec() {
-          return this.cos(this.asin(this.sinDec()));
-        }
-
-        localMeanTime() {
-          const cosH = (this.cos(this.zenith) - (this.sinDec() * this.sin(this.latitude))) / (this.cosDec() * this.cos(this.latitude));
-
-          if (cosH > 1) {
-            return "the sun never rises on this location (on the specified date)";
-          } else if (cosH < -1) {
-            return "the sun never sets on this location (on the specified date)";
-          } else {
-            const H = this.rising ? 360 - this.acos(cosH) : this.acos(cosH);
-            const RA = this.rightAscension();
-            const t = this.approximateTime();
-            return H / 15 + RA - (0.06571 * t) - 6.622;
-          }
-        }
-
-        hoursRange(h) {
-          return (h+24) % 24;
-        }
-
-        UTCTime() {
-          const T = this.localMeanTime();
-          const UT = T - this.lngHour;
-          return this.hoursRange(UT);
-        }
-
-        sunriseUtcHours() {
-          this.rising = true;
-          return this.UTCTime();
-        }
-
-        sunsetUtcHours() {
-          this.rising = false;
-          return this.UTCTime();
-        }
-
-        sunriseLocalHours(gmt) {
-          return this.hoursRange(gmt + this.sunriseUtcHours());
-        }
-
-        sunsetLocalHours(gmt) {
-          return this.hoursRange(gmt + this.sunsetUtcHours());
-        }
-
-        // utcCurrentHours is the time that you would like to test for daylight, in hours, at UTC
-        // For example, to test if it's daylight in Tokyo (GMT+9) at 10:30am, pass in
-        // utcCurrentHours=1.5, which corresponds to 1:30am UTC.
-        isDaylight(utcCurrentHours) {
-          const sunriseHours = this.sunriseUtcHours();
-          const sunsetHours = this.sunsetUtcHours();
-
-          if (typeof sunriseHours === "string" || typeof sunsetHours === "string") {
-            return false; // If sunrise or sunset never occurs, assume no daylight
-          }
-
-          if (sunsetHours < sunriseHours) {
-            // Either the sunrise or sunset time is for tomorrow
-            if (utcCurrentHours > sunriseHours) {
-              return true;
-            } else if (utcCurrentHours < sunsetHours) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-
-          if (utcCurrentHours >= sunriseHours) {
-            return utcCurrentHours < sunsetHours;
-          }
-
-          return false;
-        }
-      }
-
-      // Replacing jQuery usage with modern JavaScript
+      // Sunset Clock Application
       const SC = {};
 
-      const defaultLat = 42.3653766;
-      const defaultLon = -71.1853512;
+      const defaultLatitude = 42.3653766;
+      const defaultLongitude = -71.1853512;
 
       SC.Sunset = {
-        
         draw: {
 
-          hand: (ctx, angle, color, length, width) => {
-            const mid = 200;
+          /**
+           * Draws a clock hand on the canvas.
+           * @param {CanvasRenderingContext2D} ctx - The canvas context.
+           * @param {number} angle - The angle of the hand in radians.
+           * @param {string} color - The color of the hand.
+           * @param {number} length - The length of the hand.
+           * @param {number} width - The width of the hand.
+           */
+          drawHand: (ctx, angle, color, length, width) => {
+            const center = 200;
             ctx.beginPath();
-            ctx.moveTo(mid, mid);
-            ctx.lineTo(mid + length * Math.cos(angle), mid + length * Math.sin(angle));
+            ctx.moveTo(center, center);
+            ctx.lineTo(
+              center + length * Math.cos(angle),
+              center + length * Math.sin(angle)
+            );
             ctx.lineWidth = width;
             ctx.strokeStyle = color;
             ctx.stroke();
           },
 
-          minuteHand: (ctx, tIn, color, width) => {
-            if (typeof tIn === 'string') return; // If invalid time
-            const hours = Math.floor(tIn);
-            const minutes = Math.floor((tIn - hours) * 60);
-            let angle = 2 * Math.PI * (tIn - hours);
-            // Correct for the fact that east corresponds to 0 degrees, whereas north is 12:00
+          /**
+           * Draws the minute hand representing the sunset time.
+           * @param {CanvasRenderingContext2D} ctx - The canvas context.
+           * @param {number} timeInHours - The time in decimal hours.
+           * @param {string} color - The color of the minute hand.
+           * @param {number} width - The width of the minute hand.
+           */
+          drawMinuteHand: (ctx, timeInHours, color, width) => {
+            if (timeInHours === null) return; // If invalid time
+            const hours = Math.floor(timeInHours);
+            const minutes = Math.floor((timeInHours - hours) * 60);
+            let angle = 2 * Math.PI * (timeInHours - hours);
+            // Adjust angle so that 12:00 is at the top
             angle -= Math.PI / 2;
             const length = 180;
-            SC.Sunset.draw.hand(ctx, angle, color, length, width);
+            SC.Sunset.draw.drawHand(ctx, angle, color, length, width);
           },
 
-          hourHand: (ctx, tIn) => {
-            if (typeof tIn === 'string') return; // If invalid time
-            let hours = Math.floor(tIn);
-            const minutes = Math.floor((tIn - hours) * 60);
+          /**
+           * Draws the hour hand representing the sunset time.
+           * @param {CanvasRenderingContext2D} ctx - The canvas context.
+           * @param {number} timeInHours - The time in decimal hours.
+           */
+          drawHourHand: (ctx, timeInHours) => {
+            if (timeInHours === null) return; // If invalid time
+            let hours = Math.floor(timeInHours);
+            const minutes = Math.floor((timeInHours - hours) * 60);
             let angle = 2 * Math.PI * ((hours + minutes / 60.0) / 12.0);
-            // Correct for the fact that east corresponds to 0 degrees, whereas north is 12:00
+            // Adjust angle so that 12:00 is at the top
             angle -= Math.PI / 2;
-            SC.Sunset.draw.hand(ctx, angle, "#000000", 100, 10);
+            SC.Sunset.draw.drawHand(ctx, angle, "#000000", 100, 10);
           },
 
-          clockFace: (ctx, option) => {
-            // Draw the circle to make the clock face
-            const mid = ctx.canvas.getAttribute("width") / 2;
+          /**
+           * Draws the clock face or the center circle (nose).
+           * @param {CanvasRenderingContext2D} ctx - The canvas context.
+           * @param {string} option - 'face' to draw the clock face, 'nose' to draw the center circle.
+           */
+          drawClockFace: (ctx, option) => {
+            const center = ctx.canvas.getAttribute("width") / 2;
 
             if (option === "face") {
+              // Draw the outer circle of the clock face
               ctx.lineWidth = 2;
               ctx.beginPath();
-              ctx.arc(mid, mid, 195, 0, Math.PI * 2, true);
+              ctx.arc(center, center, 195, 0, Math.PI * 2, true);
               ctx.closePath();
               ctx.fillStyle = "#FFFFFF";
               ctx.fill();
@@ -273,24 +136,24 @@
               ctx.textBaseline = "middle";
               ctx.fillStyle = "#000";
 
-              const numberRadius = 160; // radius for numbers 
+              const numberRadius = 160; // Radius for numbers
               for (let i = 1; i <= 12; i++) {
-                const angle = (i * 30) * Math.PI / 180; // each hour is 30 degrees
-                const x = mid + numberRadius * Math.cos(angle - Math.PI / 2);
-                const y = mid + numberRadius * Math.sin(angle - Math.PI / 2);
+                const angle = (i * 30) * Math.PI / 180; // Each hour is 30 degrees
+                const x = center + numberRadius * Math.cos(angle - Math.PI / 2);
+                const y = center + numberRadius * Math.sin(angle - Math.PI / 2);
                 ctx.fillText(i.toString(), x, y);
               }
 
-              // Draw minute marks for each 5-minute increment 
+              // Draw minute marks for each 5-minute increment
               for (let mark = 0; mark < 60; mark++) {
-                const angle = (mark * 6) * Math.PI / 180; // each minute is 6 degrees
-                const length = (mark % 5 === 0) ? 10 : 5; // longer marks for hours
+                const angle = (mark * 6) * Math.PI / 180; // Each minute is 6 degrees
+                const length = (mark % 5 === 0) ? 10 : 5; // Longer marks for hours
                 const innerRadius = 195 - length;
                 const outerRadius = 195;
-                const x1 = mid + innerRadius * Math.cos(angle - Math.PI / 2);
-                const y1 = mid + innerRadius * Math.sin(angle - Math.PI / 2);
-                const x2 = mid + outerRadius * Math.cos(angle - Math.PI / 2);
-                const y2 = mid + outerRadius * Math.sin(angle - Math.PI / 2);
+                const x1 = center + innerRadius * Math.cos(angle - Math.PI / 2);
+                const y1 = center + innerRadius * Math.sin(angle - Math.PI / 2);
+                const x2 = center + outerRadius * Math.cos(angle - Math.PI / 2);
+                const y2 = center + outerRadius * Math.sin(angle - Math.PI / 2);
                 ctx.beginPath();
                 ctx.moveTo(x1, y1);
                 ctx.lineTo(x2, y2);
@@ -300,8 +163,9 @@
             }
 
             if (option === "nose") {
+              // Draw the center circle (nose)
               ctx.beginPath();
-              ctx.arc(mid, mid, 10, 0, Math.PI * 2, true);
+              ctx.arc(center, center, 10, 0, Math.PI * 2, true);
               ctx.closePath();
               ctx.fillStyle = "#000000";
               ctx.fill();
@@ -309,163 +173,215 @@
           }
         },
 
-        dec: {
-        
-          toHex: (val, numDigits) => {
-            let str = val.toString(16);
+        format: {
+
+          /**
+           * Converts a decimal value to a hexadecimal string with specified digits.
+           * @param {number} value - The decimal value to convert.
+           * @param {number} numDigits - The desired length of the hexadecimal string.
+           * @returns {string} - The hexadecimal string.
+           */
+          toHex: (value, numDigits) => {
+            let str = value.toString(16);
             while (str.length < numDigits) {
               str = "0" + str;
             }
             return str;
           },
 
-          toHms: (tIn) => {
-            if (typeof tIn === 'string') return tIn;
-            let hours = Math.floor(tIn);
-            const minutes = Math.floor((tIn - hours) * 60);
-            const seconds = Math.floor((tIn - hours - minutes / 60) * 60 * 60);
-            let pmStr = " AM";
-            if (hours > 12) {
-              hours -= 12;
-              pmStr = " PM";
-            } else if (hours === 12) {
-              pmStr = " PM";
+          /**
+           * Converts time in decimal hours to a formatted time string (HH:MM:SS AM/PM).
+           * @param {number} timeInHours - The time in decimal hours.
+           * @returns {string} - The formatted time string.
+           */
+          timeToHMS: (timeInHours) => {
+            if (timeInHours === null) return "N/A";
+            let hours = Math.floor(timeInHours);
+            const minutes = Math.floor((timeInHours - hours) * 60);
+            const seconds = Math.floor((timeInHours - hours - minutes / 60) * 3600);
+            let period = " AM";
+            if (hours >= 12) {
+              period = " PM";
+              if (hours > 12) hours -= 12;
             } else if (hours === 0) {
               hours = 12;
             }
-            return `${hours}:${SC.Sunset.pad(minutes)}:${SC.Sunset.pad(seconds)}${pmStr}`;
+            return `${hours}:${SC.Sunset.pad(minutes)}:${SC.Sunset.pad(seconds)}${period}`;
           },
 
-          toMs: (tIn) => {
-            const minutes = Math.floor(tIn * 60);
-            const seconds = Math.floor((tIn - minutes / 60) * 3600);
-            const minStr = `${minutes} minute${minutes === 1 ? "" : "s"}`;
-            const secStr = `${seconds} second${seconds === 1 ? "" : "s"}`;
+          /**
+           * Converts time difference in hours to a readable string (e.g., 'X minutes Y seconds').
+           * @param {number} timeInHours - The time difference in decimal hours.
+           * @returns {string} - The formatted time difference string.
+           */
+          timeDifferenceToString: (timeInHours) => {
+            const totalSeconds = Math.round(timeInHours * 3600);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const minuteStr = `${minutes} minute${minutes === 1 ? "" : "s"}`;
+            const secondStr = `${seconds} second${seconds === 1 ? "" : "s"}`;
             if (minutes <= 0) {
-              return secStr;
+              return secondStr;
             } else if (seconds <= 0) {
-              return minStr;
+              return minuteStr;
             } else {
-              return `${minStr} ${secStr}`;
+              return `${minuteStr} ${secondStr}`;
             }
           }
 
         },
 
-        getEarliestSunset: (lat, lon) => {
-          const day = new Date();
-          let earliestDay = new Date(day);
-          let latestDay = new Date(day);
-          let t = 0.0;
-          let max = 0.0;
-          let min = 24.0;
-          // Cycle through 365 days and find the minimum
+        /**
+         * Finds the date with the earliest sunset time within the next year.
+         * @param {number} latitude - The latitude of the location.
+         * @param {number} longitude - The longitude of the location.
+         * @returns {Date} - The date with the earliest sunset.
+         */
+        getEarliestSunsetDate: (latitude, longitude) => {
+          const currentDate = new Date();
+          let earliestSunsetDate = new Date(currentDate);
+          let earliestSunsetTime = 24.0; // Initialize with maximum possible hour
+          const oneDay = 24 * 60 * 60 * 1000;
+
+          // Cycle through the next 365 days to find the date with the earliest sunset
           for (let i = 0; i < 365; i++) {
-            const sunsetTime = SC.Sunset.getSunsetTime(day, lat, lon);
-            if (typeof sunsetTime === 'number') {
-              if (sunsetTime < min) {
-                min = sunsetTime;
-                earliestDay = new Date(day);
-              } else if (sunsetTime > max) {
-                max = sunsetTime;
-                latestDay = new Date(day);
-              }
+            const dateToCheck = new Date(currentDate.getTime() + i * oneDay);
+            const sunsetTime = SC.Sunset.getSunsetTime(dateToCheck, latitude, longitude);
+            if (sunsetTime !== null && sunsetTime < earliestSunsetTime) {
+              earliestSunsetTime = sunsetTime;
+              earliestSunsetDate = new Date(dateToCheck);
             }
-            day.setDate(day.getDate() + 1);
           }
-          return earliestDay;
+          return earliestSunsetDate;
         },
 
-        getSunsetTime: (d, lat, lon) => {
-          const sunsetObj = new SunriseSunset(
-            d.getFullYear(),
-            d.getMonth() + 1,
-            d.getDate(),
-            lat, lon
-          );
-          const tzCorrection = -1 * d.getTimezoneOffset() / 60;
-          return sunsetObj.sunsetLocalHours(tzCorrection);
+        /**
+         * Gets the sunset time for a given date and location.
+         * @param {Date} date - The date for which to calculate the sunset time.
+         * @param {number} latitude - The latitude of the location.
+         * @param {number} longitude - The longitude of the location.
+         * @returns {number|null} - The sunset time in decimal hours, or null if not available.
+         */
+        getSunsetTime: (date, latitude, longitude) => {
+          const times = SunCalc.getTimes(date, latitude, longitude);
+          const sunsetTimeUTC = times.sunset;
+          if (!sunsetTimeUTC) {
+            return null;
+          }
+          const localOffset = date.getTimezoneOffset() * 60000; // in milliseconds
+          const sunsetTimeLocal = new Date(sunsetTimeUTC.getTime() - localOffset);
+          const sunsetHours = sunsetTimeLocal.getUTCHours() + sunsetTimeLocal.getUTCMinutes() / 60 + sunsetTimeLocal.getUTCSeconds() / 3600;
+          return sunsetHours;
         },
 
-        pad: (n) => (n < 10) ? ("0" + n) : n,
+        /**
+         * Pads a number with a leading zero if it's less than 10.
+         * @param {number} number - The number to pad.
+         * @returns {string} - The padded number as a string.
+         */
+        pad: (number) => (number < 10) ? ("0" + number) : number,
 
-        startUp: () => {
-          const storedLat = localStorage.getItem('sunsetLat');
-          const storedLon = localStorage.getItem('sunsetLon');
-          if (storedLat && storedLon) {
-            SC.Sunset.showTime(parseFloat(storedLat), parseFloat(storedLon));
+        /**
+         * Initializes the application, retrieves stored location or requests geolocation.
+         */
+        initialize: () => {
+          const storedLatitude = localStorage.getItem('sunsetLatitude');
+          const storedLongitude = localStorage.getItem('sunsetLongitude');
+          if (storedLatitude && storedLongitude) {
+            SC.Sunset.displaySunsetTimes(parseFloat(storedLatitude), parseFloat(storedLongitude));
           } else {
             if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon, SC.Sunset.showDefault);
+              navigator.geolocation.getCurrentPosition(SC.Sunset.handleGeolocationSuccess, SC.Sunset.useDefaultLocation);
             } else {
-              SC.Sunset.showDefault();
+              SC.Sunset.useDefaultLocation();
             }
           }
         },
 
-        showDefault: () => {
-          SC.Sunset.showTime(defaultLat, defaultLon);
+        /**
+         * Uses the default location if geolocation is unavailable.
+         */
+        useDefaultLocation: () => {
+          SC.Sunset.displaySunsetTimes(defaultLatitude, defaultLongitude);
         },
 
-        setLatLon: (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          localStorage.setItem('sunsetLat', lat);
-          localStorage.setItem('sunsetLon', lon);
-          SC.Sunset.showTime(lat, lon);
+        /**
+         * Handles successful retrieval of geolocation data.
+         * @param {GeolocationPosition} position - The position object returned by the geolocation API.
+         */
+        handleGeolocationSuccess: (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          localStorage.setItem('sunsetLatitude', latitude);
+          localStorage.setItem('sunsetLongitude', longitude);
+          SC.Sunset.displaySunsetTimes(latitude, longitude);
         },
 
-        showTime: (lat, lon) => {
-          const td = new Date();
+        /**
+         * Displays the sunset times and updates the clock visualization.
+         * @param {number} latitude - The latitude of the location.
+         * @param {number} longitude - The longitude of the location.
+         */
+        displaySunsetTimes: (latitude, longitude) => {
+          const today = new Date();
 
+          // Get the canvas and context
           const canvas = document.getElementById('canvas');
           const ctx = canvas.getContext("2d");
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-          SC.Sunset.draw.clockFace(ctx, "face");
+          // Draw the clock face
+          SC.Sunset.draw.drawClockFace(ctx, "face");
 
-          const d = new Date();
-          let clr = "";
-          let val = 0;
+          // Draw sunset times for the next 14 days
+          const futureDate = new Date();
           const maxDays = 14;
-          const wid = 1;
+          const lineWidth = 1;
           for (let i = 0; i < maxDays; i++) {
-            val = Math.floor(255 * (i / maxDays));
-            clr = "#" + SC.Sunset.dec.toHex(val, 2) + SC.Sunset.dec.toHex(val, 2) + "FF";
-            d.setDate(d.getDate() + 1);
-            const sunsetDay = SC.Sunset.getSunsetTime(d, lat, lon);
-            if (typeof sunsetDay === 'number') {
-              SC.Sunset.draw.minuteHand(ctx, sunsetDay, clr, wid);
+            const colorValue = Math.floor(255 * (i / maxDays));
+            const colorHex = "#" + SC.Sunset.format.toHex(colorValue, 2) + SC.Sunset.format.toHex(colorValue, 2) + "FF";
+            futureDate.setDate(futureDate.getDate() + 1);
+            const sunsetTime = SC.Sunset.getSunsetTime(futureDate, latitude, longitude);
+            if (sunsetTime !== null) {
+              SC.Sunset.draw.drawMinuteHand(ctx, sunsetTime, colorHex, lineWidth);
             }
           }
 
-          const sunsetToday = SC.Sunset.getSunsetTime(td, lat, lon);
-          const tm = new Date();
-          tm.setDate(tm.getDate() + 1);
-          const sunsetTomorrow = SC.Sunset.getSunsetTime(tm, lat, lon);
+          // Get sunset times for today and tomorrow
+          const sunsetToday = SC.Sunset.getSunsetTime(today, latitude, longitude);
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const sunsetTomorrow = SC.Sunset.getSunsetTime(tomorrow, latitude, longitude);
 
-          if (typeof sunsetToday === 'number') {
-            SC.Sunset.draw.minuteHand(ctx, sunsetToday, "#000000", 6);
-            SC.Sunset.draw.hourHand(ctx, sunsetToday);
+          // Draw the current sunset time
+          if (sunsetToday !== null) {
+            SC.Sunset.draw.drawMinuteHand(ctx, sunsetToday, "#000000", 6);
+            SC.Sunset.draw.drawHourHand(ctx, sunsetToday);
           }
 
-          SC.Sunset.draw.clockFace(ctx, "nose");
+          // Draw the center circle
+          SC.Sunset.draw.drawClockFace(ctx, "nose");
 
-          const earliestSunset = SC.Sunset.getEarliestSunset(lat, lon);
+          // Find the earliest sunset date
+          const earliestSunsetDate = SC.Sunset.getEarliestSunsetDate(latitude, longitude);
 
-          let diff = 0;
-          if (typeof sunsetToday === 'number' && typeof sunsetTomorrow === 'number') {
-            diff = Math.abs(sunsetToday - sunsetTomorrow);
+          // Calculate the difference between today's and tomorrow's sunset times
+          let timeDifference = 0;
+          if (sunsetToday !== null && sunsetTomorrow !== null) {
+            timeDifference = Math.abs(sunsetToday - sunsetTomorrow);
           }
-          const daysBetween = Math.floor((earliestSunset - new Date()) / (1000 * 60 * 60 * 24)) + 1;
 
+          // Calculate days until the earliest sunset
+          const daysUntilEarliestSunset = Math.floor((earliestSunsetDate - new Date()) / (1000 * 60 * 60 * 24)) + 1;
+
+          // Update the HTML with sunset times
           document.querySelector(".time").innerHTML = `
             <table class='mdl-data-table mdl-js-data-table time-table'>
               <thead>
                 <tr>
                   <th class='mdl-data-table__cell--non-numeric' colspan='2'>
-                    Sunset for ${td.toDateString()}<br/>
-                    <a class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect' href='https://www.google.com/maps/?q=${lat},${lon}'>
+                    Sunset for ${today.toDateString()}<br/>
+                    <a class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect' href='https://www.google.com/maps/?q=${latitude},${longitude}'>
                       View Location on Map
                     </a>
                   </th>
@@ -474,30 +390,30 @@
               <tbody>
                 <tr>
                   <td class='mdl-data-table__cell--non-numeric'>Today</td>
-                  <td>${SC.Sunset.dec.toHms(sunsetToday)}</td>
+                  <td>${SC.Sunset.format.timeToHMS(sunsetToday)}</td>
                 </tr>
                 <tr>
                   <td class='mdl-data-table__cell--non-numeric'>Tomorrow</td>
-                  <td>${SC.Sunset.dec.toHms(sunsetTomorrow)}</td>
+                  <td>${SC.Sunset.format.timeToHMS(sunsetTomorrow)}</td>
                 </tr>
                 <tr>
                   <td class='mdl-data-table__cell--non-numeric'>Difference</td>
-                  <td>${SC.Sunset.dec.toMs(diff)}</td>
+                  <td>${SC.Sunset.format.timeDifferenceToString(timeDifference)}</td>
                 </tr>
                 <tr>
                   <th class='mdl-data-table__cell--non-numeric' colspan='2'>Earliest Sunset</th>
                 </tr>
                 <tr>
                   <td class='mdl-data-table__cell--non-numeric'>Date</td>
-                  <td>${earliestSunset.toDateString()}</td>
+                  <td>${earliestSunsetDate.toDateString()}</td>
                 </tr>
                 <tr>
                   <td class='mdl-data-table__cell--non-numeric'>Time</td>
-                  <td>${SC.Sunset.dec.toHms(SC.Sunset.getSunsetTime(earliestSunset, lat, lon))}</td>
+                  <td>${SC.Sunset.format.timeToHMS(SC.Sunset.getSunsetTime(earliestSunsetDate, latitude, longitude))}</td>
                 </tr>
                 <tr>
                   <td class='mdl-data-table__cell--non-numeric'>Days from Now</td>
-                  <td>${daysBetween}</td>
+                  <td>${daysUntilEarliestSunset}</td>
                 </tr>
               </tbody>
             </table>`;
@@ -506,7 +422,7 @@
     </script>
   </head>
 
-  <body class="mdl-layout mdl-js-layout mdl-layout--fixed-header" onload="SC.Sunset.startUp()">
+  <body class="mdl-layout mdl-js-layout mdl-layout--fixed-header" onload="SC.Sunset.initialize()">
     <header class="mdl-layout__header">
       <div class="mdl-layout__header-row">
         <span class="mdl-layout-title">Sunset Times</span>
