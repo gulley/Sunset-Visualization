@@ -39,6 +39,11 @@
         margin: 20px auto;
       }
 
+      .days-until-crepusculus {
+        color: crimson;
+        font-weight: 500;
+      }
+
       .sunset-info {
         text-align: left;
         padding: 20px;
@@ -63,7 +68,7 @@
 
       .difference {
         font-size: 16px;
-        color: #666;
+        color: #999;
         margin-left: 20px;
       }
 
@@ -316,8 +321,8 @@
               </div>
               
               <div class="earliest-sunset">
-                There are ${daysBetween} days until the earliest sunset.<br>
-                It will occur at ${SC.Sunset.dec.toHms(SC.Sunset.getSunsetTime(earliestSunset, lat, lon))} on ${earliestSunset.toLocaleDateString('en-US', options)}
+                There are <span class="days-until-crepusculus">${daysBetween}</span> days until Crepusculus (earliest sunset of the year).<br>
+                It will occur at <span class="earliest-sunset-time">${SC.Sunset.dec.toHms(SC.Sunset.getSunsetTime(earliestSunset, lat, lon))}</span> on <span class="earliest-sunset-date">${earliestSunset.toLocaleDateString('en-US', options)}</span>
               </div>
             </div>`;
         }
@@ -334,7 +339,7 @@
     <main class="mdl-layout__content">
       <div class="clock-card mdl-card mdl-shadow--2dp">
         <div class="mdl-card__title">
-          <h2 class="mdl-card__title-text">Sunset Clock</h2>
+          <h2 class="mdl-card__title-text">Countdown to Crepusculus</h2>
         </div>
         <div class="mdl-card__supporting-text">
           <canvas id="canvas" class="clock-canvas" width="400" height="400"></canvas>
