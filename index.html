@@ -78,13 +78,13 @@
     </style>
 
     <script type="text/javascript">
-      // Initialize the SC namespace
-      const SC = {};
+      // Initialize the SunsetCalc namespace
+      const SunsetCalc = {};
 
       const defaultLat = 42.3653766;
       const defaultLon = -71.1853512;
 
-      SC.Sunset = {
+      SunsetCalc.Sunset = {
         draw: {
           hand: (ctx, angle, color, length, width) => {
             const mid = 200;
@@ -103,7 +103,7 @@
             let angle = 2 * Math.PI * (tIn - hours);
             angle -= Math.PI / 2;
             const length = 180;
-            SC.Sunset.draw.hand(ctx, angle, color, length, width);
+            SunsetCalc.Sunset.draw.hand(ctx, angle, color, length, width);
           },
 
           hourHand: (ctx, tIn) => {
@@ -112,7 +112,7 @@
             const minutes = Math.floor((tIn - hours) * 60);
             let angle = 2 * Math.PI * ((hours + minutes / 60.0) / 12.0);
             angle -= Math.PI / 2;
-            SC.Sunset.draw.hand(ctx, angle, "#000000", 100, 10);
+            SunsetCalc.Sunset.draw.hand(ctx, angle, "#000000", 100, 10);
           },
 
           clockFace: (ctx, option) => {
@@ -190,7 +190,7 @@
             } else if (hours === 0) {
               hours = 12;
             }
-            return `${hours}:${SC.Sunset.pad(minutes)}:${SC.Sunset.pad(seconds)}${pmStr}`;
+            return `${hours}:${SunsetCalc.Sunset.pad(minutes)}:${SunsetCalc.Sunset.pad(seconds)}${pmStr}`;
           }
         },
 
@@ -202,7 +202,7 @@
           let max = 0.0;
           let min = 24.0;
           for (let i = 0; i < 365; i++) {
-            const sunsetTime = SC.Sunset.getSunsetTime(day, lat, lon);
+            const sunsetTime = SunsetCalc.Sunset.getSunsetTime(day, lat, lon);
             if (sunsetTime !== null) {
               if (sunsetTime < min) {
                 min = sunsetTime;
@@ -235,18 +235,18 @@
           const storedLat = localStorage.getItem('sunsetLat');
           const storedLon = localStorage.getItem('sunsetLon');
           if (storedLat && storedLon) {
-            SC.Sunset.showTime(parseFloat(storedLat), parseFloat(storedLon));
+            SunsetCalc.Sunset.showTime(parseFloat(storedLat), parseFloat(storedLon));
           } else {
             if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(SC.Sunset.setLatLon, SC.Sunset.showDefault);
+              navigator.geolocation.getCurrentPosition(SunsetCalc.Sunset.setLatLon, SunsetCalc.Sunset.showDefault);
             } else {
-              SC.Sunset.showDefault();
+              SunsetCalc.Sunset.showDefault();
             }
           }
         },
 
         showDefault: () => {
-          SC.Sunset.showTime(defaultLat, defaultLon);
+          SunsetCalc.Sunset.showTime(defaultLat, defaultLon);
         },
 
         setLatLon: (position) => {
@@ -254,7 +254,7 @@
           const lon = position.coords.longitude;
           localStorage.setItem('sunsetLat', lat);
           localStorage.setItem('sunsetLon', lon);
-          SC.Sunset.showTime(lat, lon);
+          SunsetCalc.Sunset.showTime(lat, lon);
         },
 
         showTime: (lat, lon) => {
@@ -264,36 +264,36 @@
           const ctx = canvas.getContext("2d");
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-          SC.Sunset.draw.clockFace(ctx, "face");
+          SunsetCalc.Sunset.draw.clockFace(ctx, "face");
 
           const d = new Date();
-          let clr = "";
+          let color = "";
           let val = 0;
           const maxDays = 14;
-          const wid = 1;
+          const width = 1;
           for (let i = 0; i < maxDays; i++) {
             val = Math.floor(255 * (i / maxDays));
-            clr = "#" + SC.Sunset.dec.toHex(val, 2) + SC.Sunset.dec.toHex(val, 2) + "FF";
+            color = "#" + SunsetCalc.Sunset.dec.toHex(val, 2) + SunsetCalc.Sunset.dec.toHex(val, 2) + "FF";
             d.setDate(d.getDate() + 1);
-            const sunsetDay = SC.Sunset.getSunsetTime(d, lat, lon);
+            const sunsetDay = SunsetCalc.Sunset.getSunsetTime(d, lat, lon);
             if (sunsetDay !== null) {
-              SC.Sunset.draw.minuteHand(ctx, sunsetDay, clr, wid);
+              SunsetCalc.Sunset.draw.minuteHand(ctx, sunsetDay, color, width);
             }
           }
 
-          const sunsetToday = SC.Sunset.getSunsetTime(td, lat, lon);
+          const sunsetToday = SunsetCalc.Sunset.getSunsetTime(td, lat, lon);
           const tm = new Date();
           tm.setDate(tm.getDate() + 1);
-          const sunsetTomorrow = SC.Sunset.getSunsetTime(tm, lat, lon);
+          const sunsetTomorrow = SunsetCalc.Sunset.getSunsetTime(tm, lat, lon);
 
           if (sunsetToday !== null) {
-            SC.Sunset.draw.minuteHand(ctx, sunsetToday, "#000000", 6);
-            SC.Sunset.draw.hourHand(ctx, sunsetToday);
+            SunsetCalc.Sunset.draw.minuteHand(ctx, sunsetToday, "#000000", 6);
+            SunsetCalc.Sunset.draw.hourHand(ctx, sunsetToday);
           }
 
-          SC.Sunset.draw.clockFace(ctx, "nose");
+          SunsetCalc.Sunset.draw.clockFace(ctx, "nose");
 
-          const earliestSunset = SC.Sunset.getEarliestSunset(lat, lon);
+          const earliestSunset = SunsetCalc.Sunset.getEarliestSunset(lat, lon);
           let diff = 0;
           if (sunsetToday !== null && sunsetTomorrow !== null) {
             diff = Math.abs(sunsetToday - sunsetTomorrow);
@@ -309,11 +309,11 @@
               <div class="sunset-times">
                 <div class="sunset-row">
                   <span>Sunset today</span>
-                  <span>${SC.Sunset.dec.toHms(sunsetToday)}</span>
+                  <span>${SunsetCalc.Sunset.dec.toHms(sunsetToday)}</span>
                 </div>
                 <div class="sunset-row">
                   <span>Sunset tomorrow</span>
-                  <span>${SC.Sunset.dec.toHms(sunsetTomorrow)}</span>
+                  <span>${SunsetCalc.Sunset.dec.toHms(sunsetTomorrow)}</span>
                 </div>
                 <div class="sunset-row">
                   <span class="difference">difference = ${Math.round(diff * 3600)} sec</span>
@@ -322,7 +322,7 @@
               
               <div class="earliest-sunset">
                 There are <span class="days-until-crepusculus">${daysBetween}</span> days until Crepusculus (earliest sunset of the year).<br>
-                It will occur at <span class="earliest-sunset-time">${SC.Sunset.dec.toHms(SC.Sunset.getSunsetTime(earliestSunset, lat, lon))}</span> on <span class="earliest-sunset-date">${earliestSunset.toLocaleDateString('en-US', options)}</span>
+                It will occur at <span class="earliest-sunset-time">${SunsetCalc.Sunset.dec.toHms(SunsetCalc.Sunset.getSunsetTime(earliestSunset, lat, lon))}</span> on <span class="earliest-sunset-date">${earliestSunset.toLocaleDateString('en-US', options)}</span>
               </div>
             </div>`;
         }
@@ -330,7 +330,7 @@
     </script>
   </head>
 
-  <body class="mdl-layout mdl-js-layout mdl-layout--fixed-header" onload="SC.Sunset.startUp()">
+  <body class="mdl-layout mdl-js-layout mdl-layout--fixed-header" onload="SunsetCalc.Sunset.startUp()">
     <header class="mdl-layout__header">
       <div class="mdl-layout__header-row">
         <span class="mdl-layout-title">Sunset Times</span>
