@@ -9,11 +9,11 @@ A working version of this page is deployed here:
 
 ## To do
 - Clean up labels at the top
-- Make sure the times match the geo-located position.
-- Put in a pink line to show the day of the earliest sunset
 - Add option to show either sunrise or sunset times
 
 
 ## Done
+- Put in a pink line to show the day of the earliest sunset
+- Make sure the times match the geo-located position.
 - Clean up table at the bottom
 - Use the SunCalc library instead of the current (very old) one.
