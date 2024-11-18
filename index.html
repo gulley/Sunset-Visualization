@@ -275,9 +275,9 @@
             val = Math.floor(255 * (i / maxDays));
             color = "#" + SunsetCalc.Sunset.dec.toHex(val, 2) + SunsetCalc.Sunset.dec.toHex(val, 2) + "FF";
             d.setDate(d.getDate() + 1);
-            const sunsetDay = SunsetCalc.Sunset.getSunsetTime(d, lat, lon);
-            if (sunsetDay !== null) {
-              SunsetCalc.Sunset.draw.minuteHand(ctx, sunsetDay, color, width);
+            const sunsetTime = SunsetCalc.Sunset.getSunsetTime(d, lat, lon);
+            if (sunsetTime !== null) {
+              SunsetCalc.Sunset.draw.minuteHand(ctx, sunsetTime, color, width);
             }
           }
 
@@ -291,14 +291,18 @@
             SunsetCalc.Sunset.draw.hourHand(ctx, sunsetToday);
           }
 
-          SunsetCalc.Sunset.draw.clockFace(ctx, "nose");
-
           const earliestSunset = SunsetCalc.Sunset.getEarliestSunset(lat, lon);
           let diff = 0;
           if (sunsetToday !== null && sunsetTomorrow !== null) {
             diff = Math.abs(sunsetToday - sunsetTomorrow);
           }
           const daysBetween = Math.floor((earliestSunset - new Date()) / (1000 * 60 * 60 * 24)) + 1;
+          
+          // Show the earliest sunset time in pink
+          const pinkColor = "#FFA0A0";
+          SunsetCalc.Sunset.draw.minuteHand(ctx, SunsetCalc.Sunset.getSunsetTime(earliestSunset, lat, lon), pinkColor, width);
+          
+          SunsetCalc.Sunset.draw.clockFace(ctx, "nose");
 
           const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
           
