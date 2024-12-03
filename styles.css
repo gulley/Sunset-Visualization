@@ -1,0 +1,63 @@
+html,
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #FAFAFA;
+  margin: 0;
+  padding: 0;
+}
+
+.mdl-layout__content {
+  padding: 20px;
+}
+
+.clock-card {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+}
+
+.clock-card .mdl-card__supporting-text {
+  text-align: center;
+}
+
+.clock-canvas {
+  display: block;
+  margin: 20px auto;
+}
+
+.days-until-crepusculus {
+  color: crimson;
+  font-weight: 500;
+}
+
+.sunset-info {
+  text-align: left;
+  padding: 20px;
+  font-size: 18px;
+}
+
+.current-date {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.sunset-times {
+  margin-bottom: 20px;
+}
+
+.sunset-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.difference {
+  font-size: 16px;
+  color: #999;
+  margin-left: 20px;
+}
+
+.earliest-sunset {
+  margin-top: 20px;
+}
