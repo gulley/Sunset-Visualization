@@ -8,6 +8,7 @@ A working version of this page is deployed here:
 
 
 ## To do
+- Add a link to show the current location
 - Clean up labels at the top
 - Add option to show either sunrise or sunset times
 
