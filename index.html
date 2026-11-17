@@ -6,11 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sunset Times</title>
   <meta name="description" content="Sunset times for the next two weeks, and a countdown to the earliest sunset of the year.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap">
 
   <link rel="stylesheet" href="styles.css">
 
@@ -20,21 +23,22 @@
 </head>
 
 <body>
-  <header class="app-header">
-    <h1 class="app-title">Sunset Times</h1>
-  </header>
-  <main class="app-content">
-    <article class="clock-card">
-      <header class="card-title">
-        <h2 class="card-title-text">Countdown to Crepusculus</h2>
-      </header>
-      <div class="card-body">
-        <canvas id="clock" class="clock-canvas" width="400" height="400" role="img"
-          aria-label="Clock showing today's sunset time, with lines for the next two weeks of sunsets"></canvas>
+  <div class="page">
+    <header class="hero">
+      <h1>Countdown to Crepusculus</h1>
+      <p class="hero-subtitle">The Earliest Sunset of the Year</p>
+    </header>
+
+    <main class="card">
+      <div class="clock-wrap">
+        <canvas id="clock" role="img"
+          aria-label="Clock showing today's sunset time, with lines for the next two weeks of sunsets and the earliest sunset of the year"></canvas>
       </div>
-      <section id="sunset-info" class="card-footer" aria-live="polite"></section>
-    </article>
-  </main>
+      <section id="sunset-info" class="info" aria-live="polite"></section>
+    </main>
+
+    <footer class="page-footer" id="location"></footer>
+  </div>
 </body>
 
 </html>
