@@ -1,109 +1,244 @@
+/* ---------- Theme tokens ---------- */
+
+:root {
+  --bg: #FBF5EF;
+  --glow: #FFD3B0;
+  --surface: #FFFFFF;
+  --tile: #FBF3EC;
+  --text: #2A2233;
+  --muted: #7A6E80;
+  --border: rgba(42, 34, 51, 0.10);
+  --shadow: 0 1px 2px rgba(42, 34, 51, 0.06), 0 12px 32px -12px rgba(120, 60, 40, 0.25);
+
+  --sun: #E36A2E;       /* today's sunset */
+  --upcoming: #5566C8;  /* the next 14 days */
+  --crep: #C92E66;      /* earliest sunset of the year */
+
+  --clock-face: #FFFDFB;
+  --clock-ink: #2A2233;
+  --clock-muted: #9A8E9F;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14101D;
+    --glow: #4A2238;
+    --surface: #1E1829;
+    --tile: #272033;
+    --text: #F3ECF5;
+    --muted: #A99DB0;
+    --border: rgba(243, 236, 245, 0.10);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+
+    --sun: #FF9050;
+    --upcoming: #8C9CFF;
+    --crep: #FF6A9C;
+
+    --clock-face: #181322;
+    --clock-ink: #F3ECF5;
+    --clock-muted: #85798C;
+  }
+}
+
+/* ---------- Page ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #FAFAFA;
-  color: rgba(0, 0, 0, 0.87);
   margin: 0;
-  padding: 0;
 }
 
-/* Header bar (replaces the MDL fixed header) */
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  height: 64px;
-  padding: 0 40px;
-  background-color: #607D8B;
-  color: #FFFFFF;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--text);
+  background:
+    radial-gradient(120% 55% at 50% 0%, var(--glow) 0%, transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
 }
 
-.app-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1;
+.page {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 48px 16px 32px;
 }
 
-.app-content {
-  padding: 20px;
-}
+/* ---------- Header ---------- */
 
-/* Card (replaces the MDL card) */
-.clock-card {
-  width: 100%;
-  max-width: 600px;
-  margin: auto;
-  box-sizing: border-box;
-  background-color: #FFFFFF;
-  border-radius: 2px;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-}
-
-.card-title {
-  padding: 16px;
-}
-
-.card-title-text {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 300;
-  line-height: normal;
-}
-
-.card-body {
-  padding: 16px;
+.hero {
   text-align: center;
+  margin-bottom: 32px;
 }
 
-.card-footer {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+.eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sun);
 }
 
-.clock-canvas {
-  display: block;
-  margin: 20px auto;
-  /* Shrink to fit on narrow screens; unchanged at desktop widths. */
-  max-width: 100%;
-  height: auto;
+.hero h1 {
+  margin: 8px 0 6px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(30px, 6vw, 46px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
-.days-until-crepusculus {
-  color: crimson;
-  font-weight: 500;
-}
-
-.sunset-info {
-  text-align: left;
-  padding: 20px;
-  font-size: 18px;
-}
-
-.current-date {
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 20px;
-}
-
-.sunset-times {
-  margin-bottom: 20px;
-}
-
-.sunset-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.difference {
+.hero-date {
+  margin: 0;
+  color: var(--muted);
   font-size: 16px;
-  color: #999;
-  margin-left: 20px;
 }
 
-.earliest-sunset {
-  margin-top: 20px;
+/* ---------- Card ---------- */
+
+.card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: center;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+}
+
+@media (min-width: 760px) {
+  .card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px;
+    padding: 40px;
+  }
+}
+
+.clock-wrap {
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.clock-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Info panel ---------- */
+
+.countdown-number {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(64px, 12vw, 96px);
+  line-height: 1;
+  color: var(--crep);
+  font-variant-numeric: lining-nums;
+}
+
+.countdown-label {
+  margin: 6px 0 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.countdown-detail {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.countdown-detail strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.tile {
+  padding: 14px 16px;
+  background: var(--tile);
+  border-radius: 16px;
+}
+
+.tile-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.tile-value {
+  margin-top: 4px;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tile-value .sec,
+.tile-value .ampm {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.tile-note {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.swatch {
+  display: inline-block;
+  width: 18px;
+  height: 4px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-radius: 2px;
+}
+
+.swatch-today { background: var(--sun); }
+.swatch-upcoming { background: linear-gradient(90deg, var(--upcoming), transparent); }
+.swatch-crep { background: var(--crep); }
+
+/* ---------- Footer ---------- */
+
+.page-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
 }
