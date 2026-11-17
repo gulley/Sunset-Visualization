@@ -2,27 +2,73 @@ html,
 body {
   font-family: 'Roboto', sans-serif;
   background-color: #FAFAFA;
+  color: rgba(0, 0, 0, 0.87);
   margin: 0;
   padding: 0;
 }
 
-.mdl-layout__content {
+/* Header bar (replaces the MDL fixed header) */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 40px;
+  background-color: #607D8B;
+  color: #FFFFFF;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.app-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.app-content {
   padding: 20px;
 }
 
+/* Card (replaces the MDL card) */
 .clock-card {
   width: 100%;
   max-width: 600px;
   margin: auto;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+  border-radius: 2px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 
-.clock-card .mdl-card__supporting-text {
+.card-title {
+  padding: 16px;
+}
+
+.card-title-text {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: normal;
+}
+
+.card-body {
+  padding: 16px;
   text-align: center;
+}
+
+.card-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .clock-canvas {
   display: block;
   margin: 20px auto;
+  /* Shrink to fit on narrow screens; unchanged at desktop widths. */
+  max-width: 100%;
+  height: auto;
 }
 
 .days-until-crepusculus {
