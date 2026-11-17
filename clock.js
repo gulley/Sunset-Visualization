@@ -66,7 +66,7 @@ export function drawFace(ctx, theme) {
 export function drawNose(ctx, theme) {
   ctx.beginPath();
   ctx.arc(MID, MID, 9, 0, Math.PI * 2);
-  ctx.fillStyle = theme.sun;
+  ctx.fillStyle = theme.ink;
   ctx.fill();
   ctx.beginPath();
   ctx.arc(MID, MID, 3.5, 0, Math.PI * 2);

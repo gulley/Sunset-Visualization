@@ -8,11 +8,9 @@ import {
 const DEFAULT_LOCATION = { lat: 42.3653766, lon: -71.1853512 };
 const STORAGE_KEYS = { lat: "sunsetLat", lon: "sunsetLon" };
 const DATE_FORMAT = { weekday: "short", day: "numeric", month: "short", year: "numeric" };
-const LONG_DATE_FORMAT = { weekday: "long", day: "numeric", month: "long", year: "numeric" };
 
 const canvas = document.getElementById("clock");
 const info = document.getElementById("sunset-info");
-const todayDate = document.getElementById("today-date");
 const locationLine = document.getElementById("location");
 
 // The most recent render, so the clock can be redrawn on resize or theme change.
@@ -92,7 +90,7 @@ function renderClock(summary) {
   drawRimMarker(ctx, summary.earliestHours, theme.crep);
 
   drawHourHand(ctx, summary.todayHours, theme.ink);
-  drawMinuteHand(ctx, summary.todayHours, theme.sun, 5);
+  drawMinuteHand(ctx, summary.todayHours, theme.ink, 5);
   drawNose(ctx, theme);
 }
 
@@ -115,26 +113,33 @@ function changeText(todayHours, tomorrowHours) {
 
 function countdownHtml(days) {
   if (days === 0) {
-    return `
-      <div class="countdown-number">Today</div>
-      <p class="countdown-label">is Crepusculus, the earliest sunset of the year</p>`;
+    return {
+      number: "Today",
+      label: "is Crepusculus",
+    };
   }
-  return `
-    <div class="countdown-number">${days}</div>
-    <p class="countdown-label">${days === 1 ? "day" : "days"} until Crepusculus</p>`;
+  return {
+    number: String(days),
+    label: `${days === 1 ? "day" : "days"} until Crepusculus`,
+  };
 }
 
 function renderInfo(summary) {
   const { today, todayHours, tomorrowHours, earliestDay, earliestHours, daysUntilEarliest } = summary;
-
-  todayDate.textContent = today.toLocaleDateString("en-US", LONG_DATE_FORMAT);
+  const countdown = countdownHtml(daysUntilEarliest);
 
   info.innerHTML = `
-    ${countdownHtml(daysUntilEarliest)}
-    <p class="countdown-detail">
-      The earliest sunset of the year is at <strong>${formatHours(earliestHours)}</strong>
-      on <strong>${earliestDay.toLocaleDateString("en-US", DATE_FORMAT)}</strong>.
-    </p>
+    <div class="countdown">
+      <div class="countdown-number">${countdown.number}</div>
+      <div>
+        <p class="countdown-label">${countdown.label}</p>
+        <p class="countdown-detail">
+          Today's date: <strong>${today.toLocaleDateString("en-US", DATE_FORMAT)}</strong><br>
+          Earliest sunset: <strong>${earliestDay.toLocaleDateString("en-US", DATE_FORMAT)}</strong>
+          at <strong>${formatHours(earliestHours)}</strong>
+        </p>
+      </div>
+    </div>
 
     <div class="tiles">
       <div class="tile">
@@ -155,8 +160,20 @@ function renderInfo(summary) {
     </ul>`;
 }
 
+function mapsUrl({ lat, lon }) {
+  return `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(5)},${lon.toFixed(5)}`;
+}
+
+// "Sunsets for 42.37° N, 71.19° W · <your current location>", where the
+// location phrase links to Google Maps so people can check the place.
 function renderLocation(location, source) {
-  locationLine.textContent = `Sunsets for ${formatCoords(location)} · ${source}`;
+  const link = document.createElement("a");
+  link.href = mapsUrl(location);
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = source;
+  link.title = "Show this location in Google Maps";
+  locationLine.replaceChildren(`Sunsets for ${formatCoords(location)} · `, link);
 }
 
 // ---------- Main ----------
