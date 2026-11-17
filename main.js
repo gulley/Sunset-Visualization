@@ -1,6 +1,6 @@
 // Page entry point: picks a location, computes sunsets and renders them.
 
-import { sunsetSummary, formatHours } from "./calc.js";
+import { sunsetSummary, formatHours, calendarDaysBetween } from "./calc.js";
 import {
   CLOCK_SIZE, clear, drawFace, drawNose, drawMinuteHand, drawTodayHands, drawRimMarker,
 } from "./clock.js";
@@ -178,12 +178,24 @@ function renderLocation(location, source) {
 
 // ---------- Main ----------
 
+// The location shown most recently, so the page can be re-rendered for a new day.
+let shown = null;
+
 function render(location, source) {
   const summary = sunsetSummary(location.lat, location.lon);
   current = summary;
+  shown = { location, source };
   renderClock(summary);
   renderInfo(summary);
   renderLocation(location, source);
+}
+
+// If the calendar day has changed since the last render (a tab left open
+// overnight), recompute everything for the new day.
+function refreshIfNewDay() {
+  if (shown && current && calendarDaysBetween(current.today, new Date()) !== 0) {
+    render(shown.location, shown.source);
+  }
 }
 
 async function start() {
@@ -216,6 +228,13 @@ async function start() {
   new ResizeObserver(() => current && renderClock(current)).observe(canvas);
   window.matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", () => current && renderClock(current));
+
+  // Catch the day changing: when the tab comes back into view, and once a
+  // minute while it stays open.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") refreshIfNewDay();
+  });
+  setInterval(refreshIfNewDay, 60 * 1000);
 }
 
 start();

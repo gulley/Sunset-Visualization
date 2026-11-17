@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- A setting sun: half disc on the horizon, with three rays. -->
+  <defs>
+    <clipPath id="above-horizon">
+      <rect x="0" y="0" width="32" height="21"/>
+    </clipPath>
+  </defs>
+  <circle cx="16" cy="21" r="9" fill="#E36A2E" clip-path="url(#above-horizon)"/>
+  <g stroke="#E36A2E" stroke-width="2.4" stroke-linecap="round">
+    <line x1="16" y1="3.5" x2="16" y2="7.5"/>
+    <line x1="5" y1="8.5" x2="7.8" y2="11.3"/>
+    <line x1="27" y1="8.5" x2="24.2" y2="11.3"/>
+  </g>
+  <line x1="2.5" y1="22.5" x2="29.5" y2="22.5" stroke="#8A7E90" stroke-width="2.6" stroke-linecap="round"/>
+  <line x1="8" y1="27.5" x2="24" y2="27.5" stroke="#C92E66" stroke-width="2.2" stroke-linecap="round"/>
+</svg>
