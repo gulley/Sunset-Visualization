@@ -2,7 +2,7 @@
 
 import { sunsetSummary, formatHours } from "./calc.js";
 import {
-  CLOCK_SIZE, clear, drawFace, drawNose, drawMinuteHand, drawHourHand, drawRimMarker,
+  CLOCK_SIZE, clear, drawFace, drawNose, drawMinuteHand, drawTodayHands, drawRimMarker,
 } from "./clock.js";
 
 const DEFAULT_LOCATION = { lat: 42.3653766, lon: -71.1853512 };
@@ -56,7 +56,8 @@ function readTheme() {
     sun: v("--sun"),
     upcoming: v("--upcoming"),
     crep: v("--crep"),
-    font: v("--font-body"),
+    faceEdge: v("--clock-face-edge"),
+    fontDisplay: v("--font-display"),
   };
 }
 
@@ -89,8 +90,7 @@ function renderClock(summary) {
   drawMinuteHand(ctx, summary.earliestHours, theme.crep, 2);
   drawRimMarker(ctx, summary.earliestHours, theme.crep);
 
-  drawHourHand(ctx, summary.todayHours, theme.ink);
-  drawMinuteHand(ctx, summary.todayHours, theme.ink, 5);
+  drawTodayHands(ctx, summary.todayHours, theme.ink);
   drawNose(ctx, theme);
 }
 
@@ -147,7 +147,7 @@ function renderInfo(summary) {
         <div class="tile-value">${timeHtml(todayHours)}</div>
       </div>
       <div class="tile">
-        <div class="tile-label">Tomorrow</div>
+        <div class="tile-label">Sunset tomorrow</div>
         <div class="tile-value">${timeHtml(tomorrowHours)}</div>
         <div class="tile-note">${changeText(todayHours, tomorrowHours)}</div>
       </div>
@@ -189,7 +189,7 @@ function render(location, source) {
 async function start() {
   // Make sure the clock numbers are drawn in the page font, not a fallback.
   try {
-    await document.fonts.load(`500 22px ${readTheme().font}`);
+    await document.fonts.load(`500 26px ${readTheme().fontDisplay}`);
   } catch {
     // Draw with whatever font is available.
   }

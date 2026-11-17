@@ -14,7 +14,8 @@
   --upcoming: #5566C8;  /* the next 14 days */
   --crep: #C92E66;      /* earliest sunset of the year */
 
-  --clock-face: #FFFDFB;
+  --clock-face: #FFFDF9;
+  --clock-face-edge: #F6EDE3;  /* faint warm shading toward the rim */
   --clock-ink: #2A2233;
   --clock-muted: #9A8E9F;
 
@@ -37,7 +38,8 @@
     --upcoming: #8C9CFF;
     --crep: #FF6A9C;
 
-    --clock-face: #181322;
+    --clock-face: #1C1627;
+    --clock-face-edge: #120E1A;
     --clock-ink: #F3ECF5;
     --clock-muted: #85798C;
   }
@@ -186,7 +188,27 @@ body {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
   color: var(--muted);
+}
+
+/* Keep "Sunset tomorrow" on one line in narrow tiles. */
+@media (max-width: 420px) {
+  .tile {
+    padding: 10px 12px;
+  }
+
+  .tile-label {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* On the narrowest phones, wrapping beats spilling out of the tile. */
+@media (max-width: 370px) {
+  .tile-label {
+    white-space: normal;
+  }
 }
 
 .tile-value {
