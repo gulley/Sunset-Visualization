@@ -1,109 +1,276 @@
+/* ---------- Theme tokens ---------- */
+
+:root {
+  --bg: #FBF5EF;
+  --glow: #FFD3B0;
+  --surface: #FFFFFF;
+  --tile: #FBF3EC;
+  --text: #2A2233;
+  --muted: #7A6E80;
+  --border: rgba(42, 34, 51, 0.10);
+  --shadow: 0 1px 2px rgba(42, 34, 51, 0.06), 0 12px 32px -12px rgba(120, 60, 40, 0.25);
+
+  --sun: #E36A2E;       /* today's sunset */
+  --upcoming: #5566C8;  /* the next 14 days */
+  --crep: #C92E66;      /* earliest sunset of the year */
+
+  --clock-face: #FFFDF9;
+  --clock-face-edge: #F6EDE3;  /* faint warm shading toward the rim */
+  --clock-ink: #2A2233;
+  --clock-muted: #9A8E9F;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14101D;
+    --glow: #4A2238;
+    --surface: #1E1829;
+    --tile: #272033;
+    --text: #F3ECF5;
+    --muted: #A99DB0;
+    --border: rgba(243, 236, 245, 0.10);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+
+    --sun: #FF9050;
+    --upcoming: #8C9CFF;
+    --crep: #FF6A9C;
+
+    --clock-face: #1C1627;
+    --clock-face-edge: #120E1A;
+    --clock-ink: #F3ECF5;
+    --clock-muted: #85798C;
+  }
+}
+
+/* ---------- Page ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #FAFAFA;
-  color: rgba(0, 0, 0, 0.87);
   margin: 0;
-  padding: 0;
 }
 
-/* Header bar (replaces the MDL fixed header) */
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--text);
+  background:
+    radial-gradient(120% 55% at 50% 0%, var(--glow) 0%, transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 16px 20px;
+}
+
+/* ---------- Header ---------- */
+
+.hero {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.hero h1 {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(26px, 5vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.hero-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* ---------- Card ---------- */
+
+.card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: center;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+}
+
+@media (min-width: 760px) {
+  .card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    padding: 24px 32px;
+  }
+}
+
+.clock-wrap {
+  width: 100%;
+  max-width: min(280px, 70vw);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.clock-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Info panel ---------- */
+
+/* Big number beside its label, rather than above it. */
+.countdown {
   display: flex;
   align-items: center;
-  height: 64px;
-  padding: 0 40px;
-  background-color: #607D8B;
-  color: #FFFFFF;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  gap: 16px;
 }
 
-.app-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 400;
+.countdown-number {
+  flex: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(52px, 10vw, 68px);
   line-height: 1;
+  color: var(--crep);
+  font-variant-numeric: lining-nums;
 }
 
-.app-content {
-  padding: 20px;
-}
-
-/* Card (replaces the MDL card) */
-.clock-card {
-  width: 100%;
-  max-width: 600px;
-  margin: auto;
-  box-sizing: border-box;
-  background-color: #FFFFFF;
-  border-radius: 2px;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-}
-
-.card-title {
-  padding: 16px;
-}
-
-.card-title-text {
+.countdown-label {
   margin: 0;
-  font-size: 24px;
-  font-weight: 300;
-  line-height: normal;
-}
-
-.card-body {
-  padding: 16px;
-  text-align: center;
-}
-
-.card-footer {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.clock-canvas {
-  display: block;
-  margin: 20px auto;
-  /* Shrink to fit on narrow screens; unchanged at desktop widths. */
-  max-width: 100%;
-  height: auto;
-}
-
-.days-until-crepusculus {
-  color: crimson;
+  font-size: 17px;
   font-weight: 500;
 }
 
-.sunset-info {
-  text-align: left;
-  padding: 20px;
-  font-size: 18px;
+.countdown-detail {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
 }
 
-.current-date {
-  font-size: 24px;
+.countdown-detail strong {
+  color: var(--text);
   font-weight: 500;
-  margin-bottom: 20px;
+  white-space: nowrap;
 }
 
-.sunset-times {
-  margin-bottom: 20px;
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
 }
 
-.sunset-row {
+.tile {
+  padding: 10px 14px;
+  background: var(--tile);
+  border-radius: 16px;
+}
+
+.tile-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+/* Keep "Sunset tomorrow" on one line in narrow tiles. */
+@media (max-width: 420px) {
+  .tile {
+    padding: 10px 12px;
+  }
+
+  .tile-label {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* On the narrowest phones, wrapping beats spilling out of the tile. */
+@media (max-width: 370px) {
+  .tile-label {
+    white-space: normal;
+  }
+}
+
+.tile-value {
+  margin-top: 2px;
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tile-value .sec,
+.tile-value .ampm {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.tile-note {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.legend {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--muted);
 }
 
-.difference {
-  font-size: 16px;
-  color: #999;
-  margin-left: 20px;
+.swatch {
+  display: inline-block;
+  width: 18px;
+  height: 4px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-radius: 2px;
 }
 
-.earliest-sunset {
-  margin-top: 20px;
+.swatch-today { background: var(--clock-ink); }
+.swatch-upcoming { background: linear-gradient(90deg, var(--upcoming), transparent); }
+.swatch-crep { background: var(--crep); }
+
+/* ---------- Footer ---------- */
+
+.page-footer {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.page-footer a {
+  color: var(--sun);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.page-footer a:hover {
+  text-decoration-thickness: 2px;
 }
